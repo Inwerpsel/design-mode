@@ -44,6 +44,7 @@ $area-speed: .2s;
   // Todo: Best way to make widths user configurable.
   > .movable-element > * {
     width: 400px;
+    max-width: 400px;
   }
   scrollbar-gutter: stable;
   overflow-y: auto;
@@ -206,6 +207,7 @@ $area-speed: .2s;
       min-width: 40px;
 
       &:only-child {
+        min-height: 0;
         height: 30px;
       }
     }
@@ -275,7 +277,7 @@ $area-speed: .2s;
       min-height: 20px;
     }
   }
-  #area-top, #area-bottom {
+  #area-top, #area-top-reverse, #area-bottom, #area-bottom-reverse {
     transition: min-height;
     transition-delay: .1s;
     .movable-element:not(.is-dragged) {
