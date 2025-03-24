@@ -200,7 +200,7 @@ export const GroupControl = props => {
   } = props;
   const isDeepest = index === 0;
 
-  const { propertyFilter, maximizeChroma, inspectedPath  } = get;
+  const { propertyFilter, maximizeChroma, inspectedPath, texturedTree  } = get;
   const [{scopes}, dispatch] = use.themeEditor();
 
   const [darkSvg, setDarkSvg] = use.svgDarkBg();
@@ -377,11 +377,7 @@ export const GroupControl = props => {
             overflow: isOpen ? 'hidden' : 'auto',
           }}
         >
-          {isRootElement ? (
-            <span style={{ float: 'right' }}>global</span>
-          ) : (
-            <ScrollInViewButton {...{ path }} />
-          )}
+          {!isRootElement && <ScrollInViewButton {...{ path }} />}
 
           <h4
             style={{
@@ -594,7 +590,7 @@ export const GroupControl = props => {
           )}
           <ElementInlineStyles {...{ group, elementScopes }} />
           <ScopeControl {...{ scopes: elementScopes, vars, element, group }} />
-          <ul className={'group-list'}>
+          <ul className={`group-list${texturedTree ? ' textured-tree' : ''}`}>
             {vars
               .filter((v) => !v.currentScope)
               .map((cssVar) => {

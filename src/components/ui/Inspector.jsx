@@ -46,6 +46,7 @@ export function Inspector() {
     showRawValues,
     excludedRawValues,
     inspectedPath,
+    texturedTree,
   } = get;
 
   let unfilteredGroups;
@@ -81,12 +82,10 @@ export function Inspector() {
     }));
   }, [unfilteredGroups, propertyFilter, search, filteredSelectors]);
 
-  const ref = useRef();
-
   return (
     <Fragment>
       {tutorial}
-      <ul className={'group-list'} {...{ ref }}>
+      <ul className={`group-list ${texturedTree ? 'textured-tree' : ''}`}>
         {groups.length === 0 && (
           <li>
             <span className="alert">No element selected</span>

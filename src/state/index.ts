@@ -135,6 +135,8 @@ export const use = {
     () => useResumableState('note', ''),
   demoMode:
     () => useGlobalState('demoMode', false),
+  texturedTree:
+    () => useLocalStorage('texturedTree', false),
   playTime:
     () => useResumableState('playtime', 0),
   // 

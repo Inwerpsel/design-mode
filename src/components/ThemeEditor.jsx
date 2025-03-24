@@ -194,13 +194,20 @@ export const ThemeEditor = (props) => {
                 >Full height preview</Checkbox>
                 <Checkbox
                   controls={[openFirstOnInspect, setOpenFirstOnInspect]}
+                  title="Whether a new inspection should leave the open groups unchanged, or it should set the open groups to only the first one of the new inspection."
                 >Auto open first group on inspect</Checkbox>
+                <Checkbox2
+                  hook={use.texturedTree}
+                  title="Increase visual grounding when scrolling the inspector by allowing elements to take up less space, leading to a random-ish texture."
+                >Textured tree</Checkbox2>
                 <Checkbox
                   controls={use.enableScrollingInView()}
-                >Scroll into view in history</Checkbox>
+                  title="Should the content frame be scrolled along when going through history?"
+                >Scroll frame with history</Checkbox>
                 <ToggleViewTransitions />
                 <Checkbox2
                   hook={use.demoMode}
+                  title="Block all input when replaying history. It does allow you to do exactly the same action, which will advance history."
                 >Demo mode</Checkbox2>
               </div>
               <WebpackHomeInput />
