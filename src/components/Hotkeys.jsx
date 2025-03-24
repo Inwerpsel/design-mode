@@ -5,6 +5,7 @@ import { flipDebugMode } from './RenderInfo';
 
 export const hotkeysOptions = {
   enableOnTags: ['INPUT', 'SELECT', 'RADIO'],
+  preventDefault: true,
 };
 
 // The hotkeys code is a bit old, I just moved it here to improve performance (it started being the only render trigger).

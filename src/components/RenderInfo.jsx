@@ -16,6 +16,7 @@ const getDebugMode = () => debugMode;
 export const flipDebugMode = () => {
   ++debugSwitchCount;
   debugMode = !debugMode;
+  console.log(`DEBUG MODE ${debugMode ? 'on' : 'off'}`)
   // Trigger a render in all components by calling their refresh handle.
   // Components keep track of the last debug mode to know whether a render was the result of a forced refresh.
   // So this render does not result in the render count incrementing, which stays consistent with the container's

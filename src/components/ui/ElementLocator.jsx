@@ -149,6 +149,15 @@ export function ElementLocator({
     const element = elements[next];
     if (instant) {
       setInspectedPath(toPath(element.node));
+      if (openFirstOnInspect) {
+        const groups = getGroupsForElement(element.node)
+        setOpenGroups(
+          {
+            [groups[0].label]: true,
+          },
+          { skipHistory: true, appendOnly: true }
+        );
+      }
     } else {
       viewHighLightSingle(element.node, {behavior: isFast ? 'instant' : 'smooth', block: 'center'});
     }
@@ -165,6 +174,7 @@ export function ElementLocator({
     >
       {showLabel && (
         <div className="monospace-code"
+            style={{maxHeight: '5rem', overflowY: 'auto'}}
             draggable={allowDrag}
             // draggable
             onDragStart={e=>{
@@ -235,7 +245,7 @@ export function ElementLocator({
             </Fragment>
           )}
         </div>
-        <div style={{ flexShrink: 1 }}>
+        <div style={{ flexShrink: 1, height: '6rem' }}>
           {!!element && !element.isCurrentlyInspected && (
             <button
               onClick={() => {

@@ -439,7 +439,7 @@ export function replaySavedStash(index) {
   const prevStash = lastAlternate;
   lastAlternate = savedStash;
   replayAlternate();
-  if (lastAlternate === savedStash) {
+  if (lastAlternate === savedStash || lastAlternate.length === 0) {
     // No new stash created, restore the previous.
     lastAlternate = prevStash;
   }

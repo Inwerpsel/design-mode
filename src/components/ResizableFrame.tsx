@@ -40,11 +40,13 @@ function InspectOnClick({frameRef, loaded}) {
   useEffect(() => {
     const doc = frameRef.current?.contentWindow.document;
     if (!doc) return;
-    function listener(event) {
+    function listener(event: PointerEvent) {
       if (frameClickBehavior === 'alt' && !event.altKey) {
         return;
       }
       const element = event.target;
+      // console.log(event.target, event.composedPath());
+      // console.log(event.target, event.composedPath());
       event.preventDefault();
       event.stopPropagation();
       if (element === lastClicked) return;

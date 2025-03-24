@@ -62,11 +62,15 @@ function ExplainPins() {
 
 function PinState(props) {
   const { id, historyIndex } = props;
-  const { pins, historyOffset, past } = useContext(HistoryNavigateContext);
+  const { 
+    pins,
+    // historyOffset,
+    // past,
+  } = useContext(HistoryNavigateContext);
   const pinIndex = pins.get(id);
   const pinnedHere = historyIndex === pinIndex;
 
-  const pinnedInFuture = pinIndex > (past.length - historyOffset);
+  // const pinnedInFuture = pinIndex > (past.length - historyOffset);
 
   return <Fragment>
     <button

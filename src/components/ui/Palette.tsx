@@ -51,7 +51,7 @@ function RawValue(props) {
   const cssVar = {name: value, value, usages: []};
 
   return <div>
-    <PreviewValue {...{ value, cssVar }} />
+    <PreviewValue {...{ value, cssVar, resolvedValue: value }} />
   </div>
 }
 
@@ -82,7 +82,7 @@ function Variable(props) {
     if (!showUsages) {
       return null;
     }
-    if (!cssVar.name.startsWith('--')) {
+    if (!cssVar.name?.startsWith('--')) {
       return [];
     }
     const regexp = new RegExp(
@@ -93,7 +93,7 @@ function Variable(props) {
 
     for (const otherVar of allVars) {
       const {name} = otherVar;
-      if (!name.startsWith('--')) {
+      if (!name?.startsWith('--')) {
         continue;
       }
       const matchScopes = new Set();
@@ -140,9 +140,11 @@ function Variable(props) {
   }
 
   if (values.length === 1) {
+    const value = values[0][1];
+
     return <div>
       <b draggable onDragStart={dragValue(value)}>{varName}</b>
-      <PreviewValue value={values[0][1]} {...{cssVar}}/>
+      <PreviewValue {...{cssVar, value, resolvedValue: value}}/>
       <ToggleButton controls={[showUsages, setShowUsages]}>Usages</ToggleButton>
       {showUsages && <Fragment>
         <VariableReferences {...{references}} />
@@ -155,7 +157,7 @@ function Variable(props) {
     <b draggable onDragStart={dragValue(value)}>{varName} ({values.length})</b>
     <ul>
       {values.map(([selector,v]) => <li key={selector} style={{clear: "both"}}>
-        <span style={{float: "right"}} className="monospace-code">{selector}</span>
+        <span className="monospace-code">{selector}</span>
         <PreviewValue value={(selector in scopes && varName in scopes[selector]) ? scopes[selector][varName] : v} {...{cssVar}}/>
       </li>)}
     </ul>
@@ -255,7 +257,7 @@ function MiniPalette({values, setValues, width = 65, mini = false}) {
                 setValues(newValues);
                 event.stopPropagation();
               } else {
-                setValues([...values, { value, isHtml }]);
+                setValues([{ value, isHtml }, ...values]);
                 event.stopPropagation();
               }
 
@@ -301,10 +303,9 @@ function MaxiPalette({values, setValues}) {
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'flex-end',
               }}
             >
-              <PaletteEntry {...{values, setValues}} {...entry} />
+              <PaletteEntry {...{value}} {...entry} />
               <button
                 style={{ alignSelf: 'flex-end' }}
                 onClick={() => {
@@ -397,7 +398,7 @@ export function Palette() {
         }}
         onClick={() => {
           if (pickedValue !== '' && !values.some(({value}) => value === pickedValue)) {
-            setValues([...values, { value: pickedValue, isHtml: false }]);
+            setValues([{ value: pickedValue, isHtml: false }, ...values]);
             console.log('test');
             setPickedValue('');
           }
@@ -416,7 +417,7 @@ export function Palette() {
               ({ value }) => value === event.dataTransfer.getData('value')
             )
           ) {
-            setValues([...values, { value, isHtml }]);
+            setValues([{ value, isHtml }, ...values]);
           }
 
           event.stopPropagation();

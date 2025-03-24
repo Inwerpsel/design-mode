@@ -39,13 +39,13 @@ export function NoteBox() {
       style={{
         background: 'white',
         border: '2px solid black',
-        fontSize: '1.2rem',
+        fontSize: 'max(1.2rem, 24px)',
         maxWidth: 800,
         // wordWrap: 'break-word',
       }}
       onClick={activate}
     >
-      <pre>
+      <pre style={{textWrap: 'auto'}}>
         {note}
       </pre>
     </div>)

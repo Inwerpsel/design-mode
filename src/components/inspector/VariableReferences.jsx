@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from "react";
-import { get } from "../../state";
 import { Checkbox } from "../controls/Checkbox";
 import { ElementLocator } from "../ui/ElementLocator";
 import { FormatVariableName } from "./VariableControl";
@@ -28,11 +27,11 @@ export function VariableReferences(props) {
           if (name === excludedVarName) {
             return null;
           }
-          return <Fragment>
-            <h5 style={{marginTop: '8px'}}>
+          return <li key={name} style={{marginTop: '1rem'}}>
+            <h5 style={{fontWeight: 'bold'}}>
               <FormatVariableName {...{ name }} />
             </h5>
-            {scopes.map(scope => {
+            <ul>{scopes.map(scope => {
               const innerSelector = usages.reduce((a, u) => (a + ',' + u.selector), '').replace(/^,/, '');
               const locateSelector = getLocateSelector(
                 scope,
@@ -41,7 +40,7 @@ export function VariableReferences(props) {
 
               return (
                 <li key={name} style={{ borderBottom: '1px solid gray' }}>
-                  {scope !== ':root' && <code style={{marginTop: '4px'}} className="monospace-code">{scope}</code>}
+                  {scope !== ':root' && <code style={{marginTop: '4px', fontSize: '1.5rem'}} className="monospace-code">{scope}</code>}
                   <div
                     draggable
                     onDragStart={dragValue(() => `var(${name})`)}
@@ -57,8 +56,8 @@ export function VariableReferences(props) {
                   </ElementLocator>
                 </li>
               );
-            })}
-          </Fragment>;
+            })}</ul>
+          </li>;
         })}
       </ul>
     </div>)

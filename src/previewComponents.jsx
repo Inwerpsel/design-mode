@@ -28,14 +28,14 @@ function FindOther({label}) {
   </Fragment>
 }
 
-function Icon({children}) {
-  return <span style={{filter: 'grayscale(1)', fontSize: '1.5rem', minWidth: '2rem', display: 'inline-block', textAlign: 'center'}}>{children}</span>
+function Icon({children, fontSize = '1.5rem'}) {
+  return <span style={{filter: 'grayscale(1)', fontSize, minWidth: '2rem', display: 'inline-block', textAlign: 'center'}}>{children}</span>
 }
 
 export const icons = {
   uiLayout: <Icon>💻</Icon>,
   inspectedPath: <Icon>🔍</Icon>,
-  themeEditor: <Icon>🖌</Icon>,
+  themeEditor: <Icon fontSize='2.5rem'>🖌</Icon>,
   scales: <Icon>🔬</Icon>,
   width: <Icon>↔</Icon>,
   height: <Icon>↕</Icon>,
@@ -105,7 +105,7 @@ export const previewComponents = {
       
       return (
         <Fragment>
-          {scope && <pre className="monospace-code" style={{maxHeight: '120px'}}>{scope}</pre>}
+          {scope && scope !== ':root' && <pre className="monospace-code" style={{maxHeight: '120px'}}>{scope}</pre>}
           <br />
           <b draggable onDragStart={dragValue(`var(${name})`)}><FormatVariableName {...{name}}/></b> <br />
           <span draggable onDragStart={dragValue(value)}>

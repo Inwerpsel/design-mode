@@ -85,7 +85,7 @@ export const FormatVariableName = ({name, style}) => {
   </span>;
 };
 
-export const PreviewValue = ({value, resolvedValue, cssVar, isDefault, referencedVariable, isOpen, group}) => {
+export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, referencedVariable, isOpen, group}) => {
   const size = PREVIEW_SIZE;
   const title = `${value}${!isDefault ? '' : ' (default)'}`;
   const isUrl = /url\(/.test(resolvedValue);
@@ -285,7 +285,7 @@ export const VariableControl = (props) => {
     showCssProperties,
     linkCssProperties,
   } = get;
-  const [{scopes}, dispatch] = use.themeEditor();
+  const [{scopes: editedScopes}, dispatch] = use.themeEditor();
 
   const [pickedValue, setPickedValue] = use.pickedValue();
 
@@ -293,8 +293,6 @@ export const VariableControl = (props) => {
     defaultValues,
     allVars,
   } = useContext(ThemeEditorContext);
-
-  const theme = scopes[ROOT_SCOPE] || {};
 
   const {
     name,
@@ -319,7 +317,7 @@ export const VariableControl = (props) => {
 
   const [overwriteVariable, setOverwriteVariable] = useState(false);
 
-  const valueFromScope = !scopes || !scopes[currentScope] ? null : scopes[currentScope][name];
+  const valueFromScope = !editedScopes || !editedScopes[currentScope] ? null : editedScopes[currentScope][name];
 
   const value = valueFromScope || defaultValue;
   const isDefault = value === defaultValue;
@@ -327,7 +325,7 @@ export const VariableControl = (props) => {
 
   // Resolve variables inside the value.
   // WIP: doesn't do all substitutions yet, but simple work.
-  let [resolvedValue, referencedVars] = resolveVariables(value, elementScopes, scopes, 0, group?.inlineStyles, group?.inheritedInlineStyles);
+  let [resolvedValue, referencedVars] = resolveVariables(value, elementScopes, editedScopes, 0, group?.inlineStyles, group?.inheritedInlineStyles);
 
   const [referencedVariable, usedScope] = useMemo(() => {
     const varMatches = value?.match(/^var\(\s*(\-\-[\w-]+)\s*[\,\)]/);
@@ -355,14 +353,20 @@ export const VariableControl = (props) => {
 
   const matchesScreen = useMemo(() => {
     const {overridingMedia} = cssVar.allVar || cssVar;
-    const matchesQuery =
-      !media ||
-      match(media, {
-        width,
-        ...mediaMatchOptions,
-      });
+    if (!media) {
+      return true;
+    }
+    try {
+      const matchesQuery =
+        match(media, {
+          width,
+          ...mediaMatchOptions,
+        });
 
-    return matchesQuery && (!overridingMedia || !isOverridden({media, cssVar, width}))
+      return matchesQuery && (!overridingMedia || !isOverridden({media, cssVar, width}))
+    } catch (e) {
+      return true;
+    }
   }, [width]);
 
   let currentLevel = referenceChain.length;
@@ -399,7 +403,7 @@ export const VariableControl = (props) => {
     );
 
     const matches = new Map();
-    for (const [selector, vars] of Object.entries(scopes)) {
+    for (const [selector, vars] of Object.entries(editedScopes)) {
       for (const [otherName, otherValue] of Object.entries(vars)) {
         if (hasRef.test(otherValue)) {
           matches.set(otherName, [...(matches.get(otherName) || []), selector]);
@@ -407,9 +411,9 @@ export const VariableControl = (props) => {
       }
     }
     for (const [selector, vars] of Object.entries(definedValues)) {
-      const scopeEdited = selector in scopes;
+      const scopeEdited = selector in editedScopes;
       for (const [otherName, otherValue] of Object.entries(vars)) {
-        if (scopeEdited && scopes[selector].hasOwnProperty(otherName)) {
+        if (scopeEdited && editedScopes[selector].hasOwnProperty(otherName)) {
           // Assume that if it exists in editor scopes, it has changed.
           continue;
         }
@@ -423,7 +427,7 @@ export const VariableControl = (props) => {
       allVars.find((v) => v.name === name) || { name, usages: [] },
       selectors,
     ]);
-  }, [scopes, isOpen]);
+  }, [editedScopes, isOpen]);
 
   const cssFunc = cssVar.cssFunc;
   // const openerRef = useRef();
@@ -436,7 +440,7 @@ export const VariableControl = (props) => {
   }
   // const stickyOffset = 72 + currentLevel * 36;
 
-  const isInTheme = name in theme || name in (scopes[currentScope] || {});
+  const isInTheme = name in (editedScopes[ROOT_SCOPE] || {}) || name in (editedScopes[currentScope] || {});
 
   const otherReferencesLength = references.length - (excludedVarName ? 1 : 0);
 

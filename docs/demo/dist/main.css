@@ -153,6 +153,12 @@ body {
   list-style-type: none;
 }
 
+.textured-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .group-list li:before {
   content: none !important;
 }
@@ -215,6 +221,7 @@ body {
 }
 
 .var-group {
+  max-width: 400px;
   position: relative;
   min-height: 47px;
   background: white !important;
@@ -376,6 +383,7 @@ div[id^=font-picker] ul {
 }
 #area-left > .movable-element > *, #area-left-inner > .movable-element > *, #area-right > .movable-element > * {
   width: 400px;
+  max-width: 400px;
 }
 @media screen and (min-height: 350px) {
   #area-left, #area-left-inner, #area-right {
@@ -499,6 +507,7 @@ div[id^=font-picker] ul {
   min-width: 40px;
 }
 .is-dragging #area-top-reverse .area-dropzone:only-child, .is-dragging #area-bottom-reverse .area-dropzone:only-child {
+  min-height: 0;
   height: 30px;
 }
 .is-dragging #area-top-reverse .drag-hovered, .is-dragging #area-bottom-reverse .drag-hovered {
@@ -553,11 +562,11 @@ div[id^=font-picker] ul {
 .is-dragging #area-left .movable-element:not(.is-dragged), .is-dragging #area-right .movable-element:not(.is-dragged) {
   min-height: 20px;
 }
-.is-dragging #area-top, .is-dragging #area-bottom {
+.is-dragging #area-top, .is-dragging #area-top-reverse, .is-dragging #area-bottom, .is-dragging #area-bottom-reverse {
   transition: min-height;
   transition-delay: 0.1s;
 }
-.is-dragging #area-top .movable-element:not(.is-dragged), .is-dragging #area-bottom .movable-element:not(.is-dragged) {
+.is-dragging #area-top .movable-element:not(.is-dragged), .is-dragging #area-top-reverse .movable-element:not(.is-dragged), .is-dragging #area-bottom .movable-element:not(.is-dragged), .is-dragging #area-bottom-reverse .movable-element:not(.is-dragged) {
   min-width: 20px;
 }
 
@@ -879,13 +888,21 @@ input[type=checkbox] + * {
   display: inline-block;
 }
 
-::-webkit-slider-thumb {
+.oklch-picker ::-webkit-slider-thumb {
   appearance: auto !important;
+  block-size: auto !important;
+  margin-block-start: 0 !important;
+}
+.oklch-picker ::-webkit-slider-runnable-track {
+  appearance: auto !important;
+  block-size: auto !important;
+  border-radius: 0 !important;
 }
 
 .oklch-picker input[type=range] {
+  border: none !important;
   min-height: 0;
-  padding: 0;
+  padding: 0 !important;
   outline: none !important;
   --picked: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
   accent-color: grey;
@@ -894,6 +911,7 @@ input[type=checkbox] + * {
   accent-color: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
 }
 .oklch-picker input[type=range]#hue::-webkit-slider-runnable-track, .oklch-picker input[type=range]:focus::-webkit-slider-runnable-track, .oklch-picker input[type=range] .hovering-with-color::-webkit-slider-runnable-track {
+  border: none;
   background: var(--picked);
   padding-top: 4px;
 }
@@ -935,14 +953,14 @@ input[type=checkbox] + * {
   opacity: var(--picked-alpha);
 }
 
-.hue, .chroma, .lightness, .alpha {
+.hue, .oklch-chroma, .lightness, .alpha {
   position: relative;
   height: 42px;
   width: 340px;
   margin: 20px 0;
   border-radius: 12px;
 }
-.oklch-picker:not(:focus-within) .hue, .oklch-picker:not(:focus-within) .hue *, .oklch-picker:not(:focus-within) .chroma, .oklch-picker:not(:focus-within) .chroma *, .oklch-picker:not(:focus-within) .lightness, .oklch-picker:not(:focus-within) .lightness *, .oklch-picker:not(:focus-within) .alpha, .oklch-picker:not(:focus-within) .alpha * {
+.oklch-picker:not(:focus-within) .hue, .oklch-picker:not(:focus-within) .hue *, .oklch-picker:not(:focus-within) .oklch-chroma, .oklch-picker:not(:focus-within) .oklch-chroma *, .oklch-picker:not(:focus-within) .lightness, .oklch-picker:not(:focus-within) .lightness *, .oklch-picker:not(:focus-within) .alpha, .oklch-picker:not(:focus-within) .alpha * {
   transition-property: width, left, right, top, height, --min-lightness, --max-lightness;
   transition-delay: 0.04s;
   transition-duration: 0.2s;
@@ -954,7 +972,7 @@ input[type=checkbox] + * {
   background: linear-gradient(90deg in oklch longer hue, var(--c), var(--c));
 }
 
-.chroma {
+.oklch-chroma {
   --hue: var(--picked-hue, 180);
   --lightness: var(--picked-lightness, 63%);
   --purest: oklch(var(--lightness) var(--max-chroma) var(--hue));
@@ -1123,6 +1141,19 @@ input[type=file]:not(:hover) {
   .countdown::after {
     --countdown: var(--countdown-length);
   }
+}
+.calc-steps {
+  padding-left: 2rem !important;
+  list-style: number !important;
+}
+
+.calc-steps li::marker {
+  font-size: 2rem;
+  color: purple;
+}
+
+input, input[type] {
+  appearance: auto;
 }
 
 /*# sourceMappingURL=main.css.map*/
