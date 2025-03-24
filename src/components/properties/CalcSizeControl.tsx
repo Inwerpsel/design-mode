@@ -125,10 +125,10 @@ function resolveUnits(_value, scenario): [number, boolean?] {
     if (unitPart === 'px') {
       return [numericPart / remFactor, true];
     }
-    if (unitPart === 'vw') {
+    if (unitPart === 'vw' || unitPart === 'dvw') {
       return [(numericPart / 100) * width / remFactor, true];
     }
-    if (unitPart === 'vh') {
+    if (unitPart === 'vh' || unitPart === 'dvh') {
       return [(numericPart / 100) * height / remFactor, true];
     }
     throw new Error(`Unsupported unit. "${unitPart}"`)
@@ -156,11 +156,13 @@ function resolveUnits(_value, scenario): [number, boolean?] {
       });
       return [result, true];
     }
-    if (unitPart === 'vh') {
+    const isDvh = unitPart === 'dvh';
+    if (unitPart === 'vh' || isDvh) {
       const result = height * numericPart / 100;
       scenario.steps.push({
         before: value,
         result: `${height} * ${numericPart}/100 = ${result}`,
+        warning: !isDvh ? null : '`dvh` is treated as `vh`, possibly leading to wrong results.',
       });
       return [result, true];
     }
@@ -471,7 +473,7 @@ export function CalcSizeControl(props) {
               <br />
               <code>{resolvedOuter}</code>
               <h5>Steps</h5>
-              <ol>
+              <ol className="calc-steps">
                 {steps.map((step, i) => {
                   let comp;
                   if (step.mathFunc) {
@@ -484,8 +486,8 @@ export function CalcSizeControl(props) {
                     const {error} = step;
                     comp = <code>Error: {error}</code>;
                   } else {
-                    const {before, result} = step;
-                    comp = <code>{before} = {result}</code>;
+                    const {before, result, warning} = step;
+                    comp = <code>{before} = {result}{warning && <span style={{background: 'yellow'}}><br />{warning}</span>}</code>;
                   }
 
                   return <li key={i}>{comp}<br /><br /></li>;

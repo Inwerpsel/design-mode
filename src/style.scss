@@ -195,6 +195,12 @@ $focus-outline: 3px solid rgb(40, 155, 255);
   list-style-type: none;
 }
 
+.textured-tree {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 // CSS loaded in the editor often has hacked custom list images.
 .group-list li:before {
   content: none !important;
@@ -286,6 +292,7 @@ $focus-outline: 3px solid rgb(40, 155, 255);
 }
 
 .var-group {
+  max-width: 400px;
   position: relative;
   min-height: $min-button-height + 5px;
   background: white !important;
@@ -878,3 +885,19 @@ input[type=file]:not(:hover) {
 }
 
 @import "css/countdown.scss";
+
+.calc-steps {
+  padding-left: 2rem !important;
+  // margin: auto !important;
+  list-style: number !important;
+}
+
+.calc-steps li::marker {
+  font-size: 2rem;
+  color: purple;
+}
+
+input, input[type] {
+  // This significantly improves quality of using the editor with arbitrary stylesheets.
+  appearance: auto;
+}
