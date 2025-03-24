@@ -126,7 +126,7 @@ export function OklchColorControl({value, onChange}) {
         }}>
           <input onChange={e=>onChange(oklch(Number(e.target.value), c, h, alpha))} id="lightness" type="range" min={0} max={100} value={l} step={0.1} />
         </div>
-        <div className="chroma">
+        <div className="oklch-chroma">
           <input
             id="chroma"
             disabled={maxChroma === 0}
