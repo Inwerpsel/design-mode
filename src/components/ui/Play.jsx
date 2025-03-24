@@ -3,6 +3,8 @@ import { getCurrentOffset, goToStart, historyForwardOne, HistoryNavigateContext 
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { Checkbox } from "../controls/Checkbox";
 import { get } from "../../state";
+import { useGlobalState } from "../../hooks/useGlobalState";
+import { viewTransitionsEnabled } from "../../functions/viewTransition";
 
 function CountTimeInState({ms}) {
   if (ms < 3999) {
@@ -24,11 +26,13 @@ function CountTimeInState({ms}) {
 
 export function Play() {
   const {playTime }= get;
-  const [on, setOn] = useState(false);
+  const [on, setOn] = useGlobalState('playing', false);
   const [loop, setLoop] = useState(false);
   const [_ms, setMs] = useLocalStorage('replayMs', 1000);
 
   const ms = playTime > 0 ? playTime * 1000 : _ms;
+
+  const transitionsEnabled = viewTransitionsEnabled();
 
   useEffect(() => {
     if (on) {
@@ -45,18 +49,34 @@ export function Play() {
                 historyForwardOne();
             }
         }, ms);
+        let docClickListener;
+        if (viewTransitionsEnabled) {
+          docClickListener = document.addEventListener('click', e => {
+            if (e.composedPath()[0] === document.documentElement) {
+              setOn(false);
+            }
+          })
+        }
         return () => {
             clearInterval(interval);
+            if (viewTransitionsEnabled) {
+              document.removeEventListener('click', docClickListener);
+            }
         };
     }
   }, [on, loop, ms]);
 
+  const blockPlay = !on && transitionsEnabled && (ms < 600);
+
   return (
-    <Fragment>
+    <div>
       <input style={{minWidth: '7rem', maxWidth: '7rem'}} type="number" value={_ms} onChange={(e) => setMs(e.target.value)} />
       <Checkbox controls={[loop, setLoop]}>loop</Checkbox>
       <button onClick={goToStart}>⏮</button>
       <button
+        // Refuse too short view transitions as they prevent clicking the pause button.
+        disabled={blockPlay}
+        title={!blockPlay ? null : 'View transitions require at least 600ms of play time.'}
         onClick={() => {
           setOn(!on);
         }}
@@ -64,7 +84,7 @@ export function Play() {
         {on ? '⏸' : '▶'}
       </button>
       {on && <CountTimeInState {...{ms}}/>}
-    </Fragment>
+    </div>
   );
 }
 

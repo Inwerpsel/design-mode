@@ -14,11 +14,22 @@ export function ToggleViewTransitions() {
         setOn(on);
     }
 
-    return <Checkbox title="Enable view transitions on navigation and UI layout changes. Some interactions will still not animate because they're too fast for view transitions." controls={[on, toggle]}>View transitions</Checkbox>
+    return (
+      <Checkbox
+        title="Enable view transitions on navigation and UI layout changes. Some interactions will still not animate because they're too fast for view transitions."
+        controls={[on, toggle]}
+      >
+        View transitions
+      </Checkbox>
+    );
 }
 
 export function toggleViewTransitions(on: boolean) {
     enableTransitions = on;
+}
+
+export function viewTransitionsEnabled() {
+    return enableTransitions;
 }
 
 function actuallyDoTransition(changeDom) {
