@@ -12,6 +12,10 @@ javascript: void (() => {
     titleEl.innerHTML = document.title;
     document.head.append(titleEl);
     document.title = 'index';
+    [...document.querySelectorAll('style:empty')].forEach(s => {
+      const text = [...s.sheet.rules].map(r=>r.cssText).join('');
+      s.innerHTML = text;
+    });
   } catch (e) {
     alert(e);
   }
