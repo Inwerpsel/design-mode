@@ -1,6 +1,6 @@
-# `use-theme-editor`: Zero config design system for any CSS
+# Design Mode
 
-This repo contains several components that combine to create a rich "theme editor" that works with the CSS it finds on any HTML page.
+This repo contains several components that combine to create a design mode that can be added to any HTML page.
 
 * A state management library with focus on undo/redo history
 * Many editor UI elements
@@ -11,14 +11,13 @@ Currently, only values in custom properties can be changed in the UI, support fo
 This limitation can be used as a feature, it allows deciding in the code which values can be changed in a design variation.
 
 The demo application is mostly a POC for the various components, where some parts are being kept as simple as possible to facilitate development.
-For example, you cannot really do anything with the created theme except loading it in the editor, and management of created themes is very basic compared to other functionality.
-Though you can also save the result as a JSON or CSS file and use it in another application.
+You can save the result as a JSON or CSS file and use it in another application.
 
 ## Demo
 
 > I used some open source page content that seemed ok to use.
 If you're the owner of some of this content and would like to have it removed / updated,
-please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-editor/issues/new) on this repo.
+please let me know in a [new issue](https://github.com/Inwerpsel/design-mode/issues/new) on this repo.
 
 ### Halfmoon ([source](https://github.com/halfmoonui/halfmoon))
 
@@ -41,9 +40,9 @@ please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-edito
   - The documentation site still relies on a few overrides that don't use custom props, which kind of spoils the experience.
 </details>
 
-[🖌 Buttons](https://inwerpsel.github.io/use-theme-editor/demo/halfmoon/docs/buttons)
-[🖌 Forms](https://inwerpsel.github.io/use-theme-editor/demo/halfmoon/docs/forms)
-[🖌 Sidebar](https://inwerpsel.github.io/use-theme-editor/demo/halfmoon/docs/sidebar)
+[🖌 Buttons](https://inwerpsel.github.io/design-mode/demo/halfmoon/docs/buttons)
+[🖌 Forms](https://inwerpsel.github.io/design-mode/demo/halfmoon/docs/forms)
+[🖌 Sidebar](https://inwerpsel.github.io/design-mode/demo/halfmoon/docs/sidebar)
 
 ### Bootstrap ([source](https://github.com/twbs/bootstrap/blob/main/site/content/docs/5.3/examples/cheatsheet/index.html))
 
@@ -63,48 +62,48 @@ please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-edito
   for a property on `.btn`.
 
   #### Loading an export of editor history
-  You can import and editor session by saving this JSON file: https://github.com/Inwerpsel/use-theme-editor/blob/main/data/histories/bs-crystal-buttons.json
+  You can import and editor session by saving this JSON file: https://github.com/Inwerpsel/design-mode/blob/main/data/histories/bs-crystal-buttons.json
 
   Then, use the "Import history JSON" in the "Import/export" panel to load the session from this file.
 
   It attempts to restore the scroll position, which may not fully work if the screen size is too small.
 
 #### Smaller pages
-[🖌 album](https://inwerpsel.github.io/use-theme-editor/demo/bs/album)
-[🖌 blog](https://inwerpsel.github.io/use-theme-editor/demo/bs/blog)
-[🖌 carousel](https://inwerpsel.github.io/use-theme-editor/demo/bs/carousel)
-[🖌 checkout](https://inwerpsel.github.io/use-theme-editor/demo/bs/checkout)
-[🖌 cover](https://inwerpsel.github.io/use-theme-editor/demo/bs/cover)
-[🖌 dashboard](https://inwerpsel.github.io/use-theme-editor/demo/bs/dashboard)
-[🖌 dropdowns](https://inwerpsel.github.io/use-theme-editor/demo/bs/dropdowns)
-[🖌 features](https://inwerpsel.github.io/use-theme-editor/demo/bs/features)
-[🖌 footers](https://inwerpsel.github.io/use-theme-editor/demo/bs/footers)
-[🖌 grid](https://inwerpsel.github.io/use-theme-editor/demo/bs/grid)
-[🖌 headers](https://inwerpsel.github.io/use-theme-editor/demo/bs/headers)
-[🖌 heroes](https://inwerpsel.github.io/use-theme-editor/demo/bs/heroes)
-[🖌 jumbotron](https://inwerpsel.github.io/use-theme-editor/demo/bs/jumbotron)
-[🖌 list-groups](https://inwerpsel.github.io/use-theme-editor/demo/bs/list-groups)
-[🖌 masonry](https://inwerpsel.github.io/use-theme-editor/demo/bs/masonry)
-[🖌 modals](https://inwerpsel.github.io/use-theme-editor/demo/bs/modals)
-[🖌 navbar-bottom](https://inwerpsel.github.io/use-theme-editor/demo/bs/navbar-bottom)
-[🖌 navbar-fixed](https://inwerpsel.github.io/use-theme-editor/demo/bs/navbar-fixed)
-[🖌 navbar-static](https://inwerpsel.github.io/use-theme-editor/demo/bs/navbar-static)
-[🖌 navbars](https://inwerpsel.github.io/use-theme-editor/demo/bs/navbars)
-[🖌 navbars-offcanvas](https://inwerpsel.github.io/use-theme-editor/demo/bs/navbars-offcanvas)
-[🖌 offcanvas-navbar (sic)](https://inwerpsel.github.io/use-theme-editor/demo/bs/offcanvas-navbar)
-[🖌 pricing](https://inwerpsel.github.io/use-theme-editor/demo/bs/pricing)
-[🖌 product](https://inwerpsel.github.io/use-theme-editor/demo/bs/product)
-[🖌 rtl](https://inwerpsel.github.io/use-theme-editor/demo/bs/rtl)
-[🖌 sidebars](https://inwerpsel.github.io/use-theme-editor/demo/bs/sidebars)
-[🖌 sign-in](https://inwerpsel.github.io/use-theme-editor/demo/bs/sign-in)
-[🖌 starter-template](https://inwerpsel.github.io/use-theme-editor/demo/bs/starter-template)
-[🖌 sticky-footer](https://inwerpsel.github.io/use-theme-editor/demo/bs/sticky-footer)
-[🖌 sticky-footer-navbar](https://inwerpsel.github.io/use-theme-editor/demo/bs/sticky-footer-navbar)
+[🖌 album](https://inwerpsel.github.io/design-mode/demo/bs/album)
+[🖌 blog](https://inwerpsel.github.io/design-mode/demo/bs/blog)
+[🖌 carousel](https://inwerpsel.github.io/design-mode/demo/bs/carousel)
+[🖌 checkout](https://inwerpsel.github.io/design-mode/demo/bs/checkout)
+[🖌 cover](https://inwerpsel.github.io/design-mode/demo/bs/cover)
+[🖌 dashboard](https://inwerpsel.github.io/design-mode/demo/bs/dashboard)
+[🖌 dropdowns](https://inwerpsel.github.io/design-mode/demo/bs/dropdowns)
+[🖌 features](https://inwerpsel.github.io/design-mode/demo/bs/features)
+[🖌 footers](https://inwerpsel.github.io/design-mode/demo/bs/footers)
+[🖌 grid](https://inwerpsel.github.io/design-mode/demo/bs/grid)
+[🖌 headers](https://inwerpsel.github.io/design-mode/demo/bs/headers)
+[🖌 heroes](https://inwerpsel.github.io/design-mode/demo/bs/heroes)
+[🖌 jumbotron](https://inwerpsel.github.io/design-mode/demo/bs/jumbotron)
+[🖌 list-groups](https://inwerpsel.github.io/design-mode/demo/bs/list-groups)
+[🖌 masonry](https://inwerpsel.github.io/design-mode/demo/bs/masonry)
+[🖌 modals](https://inwerpsel.github.io/design-mode/demo/bs/modals)
+[🖌 navbar-bottom](https://inwerpsel.github.io/design-mode/demo/bs/navbar-bottom)
+[🖌 navbar-fixed](https://inwerpsel.github.io/design-mode/demo/bs/navbar-fixed)
+[🖌 navbar-static](https://inwerpsel.github.io/design-mode/demo/bs/navbar-static)
+[🖌 navbars](https://inwerpsel.github.io/design-mode/demo/bs/navbars)
+[🖌 navbars-offcanvas](https://inwerpsel.github.io/design-mode/demo/bs/navbars-offcanvas)
+[🖌 offcanvas-navbar (sic)](https://inwerpsel.github.io/design-mode/demo/bs/offcanvas-navbar)
+[🖌 pricing](https://inwerpsel.github.io/design-mode/demo/bs/pricing)
+[🖌 product](https://inwerpsel.github.io/design-mode/demo/bs/product)
+[🖌 rtl](https://inwerpsel.github.io/design-mode/demo/bs/rtl)
+[🖌 sidebars](https://inwerpsel.github.io/design-mode/demo/bs/sidebars)
+[🖌 sign-in](https://inwerpsel.github.io/design-mode/demo/bs/sign-in)
+[🖌 starter-template](https://inwerpsel.github.io/design-mode/demo/bs/starter-template)
+[🖌 sticky-footer](https://inwerpsel.github.io/design-mode/demo/bs/sticky-footer)
+[🖌 sticky-footer-navbar](https://inwerpsel.github.io/design-mode/demo/bs/sticky-footer-navbar)
 
 </details>
 
 #### Big page with most things
-[🖌 Cheatsheet](https://inwerpsel.github.io/use-theme-editor/demo/bs/cheatsheet/)
+[🖌 Cheatsheet](https://inwerpsel.github.io/design-mode/demo/bs/cheatsheet/)
 ### Openprops ([source](https://open-props.style/))
 
 <details>
@@ -124,7 +123,7 @@ please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-edito
   - Some inline styles (e.g. border radius) not properly handled
 </details>
 
-[🖌 Home page](https://inwerpsel.github.io/use-theme-editor/demo/openprops/home/)
+[🖌 Home page](https://inwerpsel.github.io/design-mode/demo/openprops/home/)
 
 ### MDN web docs
 
@@ -140,10 +139,10 @@ please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-edito
   Possible related to the `:root:not(.light):not(.dark)` selector
 </details>
 
-[🖌 Using CSS custom properties](https://inwerpsel.github.io/use-theme-editor/demo/mozilladocs/use-custom-properties/)
-[🖌 Basic math in JavaScript — numbers and operators](https://inwerpsel.github.io/use-theme-editor/demo/mozilladocs/jsmath/)
-[🖌 @media hover](https://inwerpsel.github.io/use-theme-editor/demo/mozilladocs/media-hover/)
-[🖌 How CSS is structured](https://inwerpsel.github.io/use-theme-editor/demo/mozilladocs/how-is-css-structured/)
+[🖌 Using CSS custom properties](https://inwerpsel.github.io/design-mode/demo/mozilladocs/use-custom-properties/)
+[🖌 Basic math in JavaScript — numbers and operators](https://inwerpsel.github.io/design-mode/demo/mozilladocs/jsmath/)
+[🖌 @media hover](https://inwerpsel.github.io/design-mode/demo/mozilladocs/media-hover/)
+[🖌 How CSS is structured](https://inwerpsel.github.io/design-mode/demo/mozilladocs/how-is-css-structured/)
 
 ### Pico CSS
 
@@ -160,27 +159,27 @@ please let me know in a [new issue](https://github.com/Inwerpsel/use-theme-edito
  
 </details>
 
-[🖌 accordions](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/accordions.html)
-[🖌 buttons](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/buttons.html)
-[🖌 cards](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/cards.html)
-[🖌 classless](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/classless.html)
-[🖌 containers](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/containers.html)
-[🖌 customization](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/customization.html)
-[🖌 dropdowns](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/dropdowns.html)
-[🖌 forms](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/forms.html)
-[🖌 grid](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/grid.html)
-[🖌 home](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/home.html)
-[🖌 loading](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/loading.html)
-[🖌 modal](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/modal.html)
-[🖌 navs](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/navs.html)
-[🖌 progress](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/progress.html)
-[🖌 rtl](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/rtl.html)
-[🖌 scroller](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/scroller.html)
-[🖌 tables](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/tables.html)
-[🖌 themes](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/themes.html)
-[🖌 tooltips](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/tooltips.html)
-[🖌 typography](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/typography.html)
-[🖌 we-love-classes](https://inwerpsel.github.io/use-theme-editor/demo/pico/docs/we-love-classes.html)
+[🖌 accordions](https://inwerpsel.github.io/design-mode/demo/pico/docs/accordions.html)
+[🖌 buttons](https://inwerpsel.github.io/design-mode/demo/pico/docs/buttons.html)
+[🖌 cards](https://inwerpsel.github.io/design-mode/demo/pico/docs/cards.html)
+[🖌 classless](https://inwerpsel.github.io/design-mode/demo/pico/docs/classless.html)
+[🖌 containers](https://inwerpsel.github.io/design-mode/demo/pico/docs/containers.html)
+[🖌 customization](https://inwerpsel.github.io/design-mode/demo/pico/docs/customization.html)
+[🖌 dropdowns](https://inwerpsel.github.io/design-mode/demo/pico/docs/dropdowns.html)
+[🖌 forms](https://inwerpsel.github.io/design-mode/demo/pico/docs/forms.html)
+[🖌 grid](https://inwerpsel.github.io/design-mode/demo/pico/docs/grid.html)
+[🖌 home](https://inwerpsel.github.io/design-mode/demo/pico/docs/home.html)
+[🖌 loading](https://inwerpsel.github.io/design-mode/demo/pico/docs/loading.html)
+[🖌 modal](https://inwerpsel.github.io/design-mode/demo/pico/docs/modal.html)
+[🖌 navs](https://inwerpsel.github.io/design-mode/demo/pico/docs/navs.html)
+[🖌 progress](https://inwerpsel.github.io/design-mode/demo/pico/docs/progress.html)
+[🖌 rtl](https://inwerpsel.github.io/design-mode/demo/pico/docs/rtl.html)
+[🖌 scroller](https://inwerpsel.github.io/design-mode/demo/pico/docs/scroller.html)
+[🖌 tables](https://inwerpsel.github.io/design-mode/demo/pico/docs/tables.html)
+[🖌 themes](https://inwerpsel.github.io/design-mode/demo/pico/docs/themes.html)
+[🖌 tooltips](https://inwerpsel.github.io/design-mode/demo/pico/docs/tooltips.html)
+[🖌 typography](https://inwerpsel.github.io/design-mode/demo/pico/docs/typography.html)
+[🖌 we-love-classes](https://inwerpsel.github.io/design-mode/demo/pico/docs/we-love-classes.html)
 
 ### Other sites
 
@@ -192,7 +191,7 @@ I might in the future add a general purpose way to load other sites, though this
 challenges. Luckily it's quite easy to run locally.
 
 Just save any page as HTML in the browser, into the `/docs` folder, and inject the script and style 
-tags you see in [other example HTML pages at the end of the body](https://github.com/Inwerpsel/use-theme-editor/blob/a040386a18ab001b2add0e59610f4ae077128d36/docs/halfmoon/docs/buttons.html#L1091-L1092).
+tags you see in [other example HTML pages at the end of the body](https://github.com/Inwerpsel/design-mode/blob/a040386a18ab001b2add0e59610f4ae077128d36/docs/halfmoon/docs/buttons.html#L1091-L1092).
 
 ## Features
 * Plug and play: can be added to any page of an app
@@ -213,12 +212,12 @@ Some others depend on a planned (partially done) rewrite of the inspection logic
 * Most common usage patterns for CSS custom properties are well supported, with a few exceptions:
   - If the same property name is used across multiple elements, it only is shown on the topmost (e.g. "--background" in pico demo)
   - Not able to change color if the variable is inside the color function (e.g. `color: hsl(var(--h), var(--s), var(--l))`). Unfortunately many sites do this.
-* Usage of many media queries on the same custom properties is very likely to lead to incorrect inspection results
-* The "link" UI lists all variables with no filtering on type
+* Usage of many media queries on the same custom properties is likely to lead to incomplete inspection results.
+* The "link" UI lists all variables with no filtering on type.
 * The editor has few own CSS styles, mostly to guarantee basic functionality. As an artifact of how the editor was initially implemented,
 it loads the sheets on the inspected page before the editor styles. This can get a bit broken, but can also look good and consistent with the content.
-* Drag and drop is the only way to reorder elements in an area, on touch screens you can only move to the end of an area
-* You can put any element in any area, but some combinations will lead to unusable or broken layouts, mostly in the top and bottom areas
+* Drag and drop is the only way to reorder elements in an area, on touch screens you can only move to the end of an area.
+* You can put any element in any area, but some combinations will lead to unusable or broken layouts, mostly in the top and bottom areas.
 
 ## Roadmap
 
@@ -227,11 +226,6 @@ Among the issues on this repo, the following are the current areas of focus.
 * **History UI**:
 The UI around history was expanded a lot recently, and there's still some
 nuances to figure out, as well as some possible new capabilities.
-* **Refactor how inspector frame is loaded**:
-Currently, it still requires a script to be added to the page after saving it. This script also runs some duplicate logic with the main document.
-It was also written without the realization that many (if not all) interactions
-with the iframe can be done synchronously (i.e. without `postMessage`).
-Addressing this is expected to significantly improve memory usage.
 * **Clean up CSS parsing and evaluation of inspection**:
 Currently, the algorithm used for most of the inspection still dates to the 
 initial implementation of this repo, and the assumptions have changed enough so
@@ -244,7 +238,7 @@ not only the contents of custom properties.
 
 While in general most functionality is quite stable, various parts are being worked on at the moment. If you'd like to
 make use of this repo in any form, but can't find everything you need to set it up (be it documentation or
-functionality), feel free to open a [new issue](https://github.com/Inwerpsel/use-theme-editor/issues/new) describing your needs and they'll be prioritized.
+functionality), feel free to open a [new issue](https://github.com/Inwerpsel/design-mode/issues/new) describing your needs and they'll be prioritized.
 
 ## FAQ
 
@@ -326,10 +320,10 @@ For now you can still get an overview by exporting the current theme as JSON or 
 \* Not fully set up as separate packages yet, but code should work as such.
 These components should work with any React application.
 
-### [Draggable elements](https://github.com/Inwerpsel/use-theme-editor/tree/main/src/components/movable)
+### [Draggable elements](https://github.com/Inwerpsel/design-mode/tree/main/src/components/movable)
 I have no good name for it yet (in code called MovablePanels). It makes drag and drop rearrangement in React very easy.
 
-### [State management with history](https://github.com/Inwerpsel/use-theme-editor/blob/main/src/hooks/useResumableReducer.tsx)
+### [State management with history](https://github.com/Inwerpsel/design-mode/blob/main/src/hooks/useResumableReducer.tsx)
 Using `useSyncExternalStore`, these hooks make it possible to put multiple pieces of state into a single history timeline,
 while offering a similar function signature as `useState` and `useReducer`. Any code that uses either should just work
 with history by replacing the function, and adding a string key.
@@ -361,41 +355,6 @@ the locked state will be included in both the new timeline and still in the stas
 </summary>
 
 ### IN PROGRESS
-- Improve relative layout of deeper parts of the inspector UI
-  - Find design principles that work with the complex and interconnected nature of the displayed information.
-  - Current principles: at the top level it shows the entire dependency chain up to the variable setting the raw value.
-    Each of these elements can be "opened" to access all details about that variable, including other references than 
-    than the current one. It should provide quick and intuitive access to each piece of information, while keeping the 
-    overall structure and flow understandable and not overwhelming. Ideally it's possible to open any 2 given pieces 
-    of information at the same time.
-  - Current per variable elements:
-    - Basic information (formatted name, value) (always visible)
-    - Screen switcher (only when needed) (always visible)
-    - Extra scroll in view button
-    - Usages in `var()` statements in source CSS on regular properties
-      - Grouped by selector + property
-      - Element locator for each individual selector of the rule
-      - Property
-    - Usages in `var()` statements of other custom properties (source + theme)
-      - Referencing variable name
-      - Grouped* by combined selectors of properties.
-      - Element locator
-    - Replace with other variable
-    - Typed control (different per type, will do after figuring out how to handle property types)
-    - Unset button
-    - Media query
-  - Element locator:
-    - Selector being located
-    - Scroll in view button
-    - Previous and next button
-    - Counter + indicator of current
-    - Tagname + id + classes of current
-    - Inspect button (unless element is the current inspected)
-    - Not found message
-  - Togglable elements:
-    - CSS properties (+ indicator if current var is not the full value)
-    - Source code link (if available, filename (formatted) + line)
-
 - Support "locally" scoped custom properties
   - Problem: Selector specificity when adding a rule after the existing rules
     - For now this is solved using `!important`, which surprisingly seems to work 100% of the time.
@@ -405,7 +364,6 @@ the locked state will be included in both the new timeline and still in the stas
       - Recalculations affect (often much) less elements, because cascading no longer needed
       - No specificity challenges at all
       - Also supports regular CSS edits
-
 - Determine / infer property types
   - examples + libs
     - https://github.com/mdn/yari/blob/main/kumascript/macros/CSSSyntax.ejs
@@ -441,7 +399,6 @@ the locked state will be included in both the new timeline and still in the stas
 - Visualize some math functions
 - More tailored controls / group properties into single control?
 - Make hotkeys configurable in the UI
-- Clean up internal style handling (separate styles altogether?, )
 - Use `ResponsiveFrame` to render multiple themes / screen sizes at the same time
 - Expand the color usages quick menu to allow picking all kinds of values. Maybe a textual widget ordered by how
   frequently used?
@@ -455,12 +412,6 @@ the locked state will be included in both the new timeline and still in the stas
 - As browser extension?
   - Address CORS (or detect + warn)
   - Address idle performance (lazy extract page variables / lazy include entire script)
-- Optimize root property updates
-  - Updating root causes full style recalculation
-    - Doesn't work well on large pages
-    - e.g. Halfmoon
-  - Could modify the CSS to work differently with the same result
-  - Keep track of how browsers handle custom property updates, perhaps this gets optimized as it's quite common to set these on the root element.
 - Visualize overridden scope values, so that you can see what happens when removed from a scope.
   - However, it shouldn't result in a devtools like experience, where over half of what's shown is overridden rules.
 - Allow mapping hotkeys to any reducer action
@@ -472,14 +423,7 @@ the locked state will be included in both the new timeline and still in the stas
     - Other approach is to tie it to event listeners. Might allow defining function once. Still need to check focus probably.
 - History actions
   - Clear newer / older separately
-  - Clear specific state members
-    - Apply the most recent state to all members in history.
   - Squash
-  - Different edit modes when in the past
-    - Current mode: discard future, prompt first if offset > 5
-    - Optional prompt?
-    - Save any "chopped" off futures?
-    - Options determining which scenario (e.g. save when > 3 edits, discard when < 2)
 
 ## Future theme structure
 
