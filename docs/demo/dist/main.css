@@ -908,7 +908,7 @@ input[type=checkbox] + * {
   accent-color: grey;
 }
 .oklch-picker input[type=range]::-webkit-slider-thumb {
-  accent-color: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
+  accent-color: var(--picked);
 }
 .oklch-picker input[type=range]#hue::-webkit-slider-runnable-track, .oklch-picker input[type=range]:focus::-webkit-slider-runnable-track, .oklch-picker input[type=range] .hovering-with-color::-webkit-slider-runnable-track {
   border: none;
@@ -1058,7 +1058,7 @@ html.doxray :not(:has(.xray), :has(> .xray) > *, :has(> .xray) > * *, .xray, .xr
   visibility: hidden;
   filter: opacity(0.4) blur(1.5px);
 }
-html.doxray :has(> .xray) > :not(.xray, symbol, symbol *, defs, defs *, mask, mask *), html.doxray :has(> .xray) > :not(.xray, symbol, symbol *, defs, defs *, mask, mask *) * {
+html.doxray :has(> .xray) > :not(.xray, .xray *, symbol, symbol *, defs, defs *, mask, mask *), html.doxray :has(> .xray) > :not(.xray, .xray *, symbol, symbol *, defs, defs *, mask, mask *) * {
   visibility: hidden;
   transition-property: visibility;
   transition-delay: 0.16s;

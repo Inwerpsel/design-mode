@@ -1,3 +1,5 @@
+import fullhd from '../../data/uiLayout/fullhd.json';
+
 export const presets = {
   empty: {
     map: {
@@ -107,4 +109,5 @@ export const presets = {
       WebpackHomeInput: ['drawer', 9],
     },
   },
+  fullhd,
 };

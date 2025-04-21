@@ -11,6 +11,7 @@ import { DragHandle } from './DragHandle';
 import { doTransition } from '../../functions/viewTransition';
 import { CompactModeButton } from './CompactModeButton';
 import { presets } from './presets';
+import { saveAsJsonFile } from '../../functions/export';
 
 function Presets({setUiState, inputName, setInputName}) {
   return (
@@ -142,7 +143,17 @@ export function MoveControls() {
                 });
               }}
             />
-            <Presets {...{setUiState, inputName, setInputName}} />
+            {inputName.length > 0 && (
+              <button
+                onClick={() => {
+                  saveAsJsonFile(uiState, inputName);
+                }}
+              >
+                export
+              </button>
+            )}
+
+            <Presets {...{ setUiState, inputName, setInputName }} />
           </div>
         </Fragment>
       )}

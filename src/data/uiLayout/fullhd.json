@@ -1,0 +1,140 @@
+{
+  "map": {
+    "HistoryVisualization": [
+      "area-bottom",
+      1
+    ],
+    "Palette": [
+      "area-bottom",
+      2
+    ],
+    "PickedValue": [
+      "area-bottom",
+      3
+    ],
+    "HistoryStash": [
+      "area-left",
+      1
+    ],
+    "StartTutorial": [
+      "area-left",
+      2
+    ],
+    "Filters": [
+      "area-left",
+      3
+    ],
+    "Inspector": [
+      "area-left",
+      4
+    ],
+    "HistoryControls": [
+      "area-top",
+      1
+    ],
+    "ScreenSwitcher": [
+      "area-top",
+      2
+    ],
+    "FrameScaleSlider": [
+      "area-top",
+      3
+    ],
+    "Session": [
+      "drawer",
+      1
+    ],
+    "MoveControls": [
+      "drawer",
+      2
+    ],
+    "Selectors": [
+      "drawer",
+      3
+    ],
+    "Xray": [
+      "drawer",
+      4
+    ],
+    "NoteBox": [
+      "drawer",
+      5
+    ],
+    "PlayTime": [
+      "drawer",
+      6
+    ],
+    "Play": [
+      "drawer",
+      7
+    ],
+    "RemoveAnnoyingPrefix": [
+      "drawer",
+      8
+    ],
+    "CursorBehavior": [
+      "drawer",
+      9
+    ],
+    "ThemeUploadPanel": [
+      "drawer",
+      10
+    ],
+    "ExtraPanelsMenu": [
+      "drawer",
+      11
+    ],
+    "ImportExportTools": [
+      "drawer",
+      12
+    ],
+    "StylesheetDisabler": [
+      "drawer",
+      13
+    ],
+    "ThemesList": [
+      "drawer",
+      14
+    ],
+    "FullscreenToggle": [
+      "drawer",
+      15
+    ],
+    "ColorSettings": [
+      "drawer",
+      16
+    ],
+    "InspectionSettings": [
+      "drawer",
+      17
+    ],
+    "InformationVisibilitySettings": [
+      "drawer",
+      18
+    ],
+    "WebpackHomeInput": [
+      "drawer",
+      19
+    ],
+    "NameReplacements": [
+      "drawer",
+      20
+    ],
+    "CurrentTheme": [
+      "drawer",
+      21
+    ],
+    "FullHeightFrameScale": [
+      "drawer",
+      22
+    ],
+    "CustomVariableInput": [
+      "drawer",
+      23
+    ],
+    "FrameSizeSettings": [
+      "drawer",
+      24
+    ]
+  }
+}
