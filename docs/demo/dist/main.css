@@ -26,6 +26,9 @@ body {
   border-radius: 6px;
   font-size: 16px;
 }
+.theme-editor button:active, .theme-editor input:active {
+  outline: none !important;
+}
 .theme-editor button, .theme-editor input:is([type=button], [type=text]), .theme-editor select, .theme-editor label:has(> [type=checkbox]) {
   box-sizing: border-box;
   min-width: 42px;
@@ -344,10 +347,6 @@ div[id^=font-picker] ul {
   font-size: 24px;
   min-width: 64px;
   min-height: 64px;
-}
-
-.content {
-  min-height: 400px;
 }
 
 .area-switcher {
@@ -732,6 +731,9 @@ div[id^=font-picker] ul {
 }
 button:has(.pin):not(:hover) {
   border-color: transparent;
+}
+:has(.pin):focus-visible {
+  outline: 3px solid rgb(40, 155, 255) !important;
 }
 
 .pinned-here .pin {

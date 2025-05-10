@@ -82,6 +82,7 @@ const lists = {
     'oldstyle-nums stacked-fractions',
   ],
   'scroll-behavior': ['auto', 'smooth'],
+  'scrollbar-width': ['auto', 'thin', 'none'],
   'white-space': [
     'normal',
     'nowrap',
