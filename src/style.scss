@@ -28,6 +28,10 @@ $focus-outline: 3px solid rgb(40, 155, 255);
     padding: 4px 7px;
     border-radius: 6px;
     font-size: 16px;
+
+    &:active {
+      outline: none !important;
+    }
   }
 
   button, input:is([type=button], [type=text]), select, label:has(>[type=checkbox]) {
@@ -140,6 +144,7 @@ $focus-outline: 3px solid rgb(40, 155, 255);
   transform-origin: 0 0;
   //overflow: hidden;
   iframe {
+    max-width: none;
     background-color: white;
   }
 
@@ -430,9 +435,6 @@ div[id^=font-picker] ul {
   min-height: 64px;
 }
 
-.content {
-  min-height: 400px;
-}
 @import "css/movable";
 
 .monospace-code {
@@ -552,6 +554,10 @@ $pin-out: $pin-delay, 0s;
 
   button:has(> &):not(:hover) {
     border-color: transparent;
+  }
+
+  :has(>&):focus-visible {
+    outline: $focus-outline !important;
   }
 }
 
@@ -711,9 +717,13 @@ button:disabled {
 .hide-important {
   visibility: hidden !important;
 }
+.editor-doc {
+  scrollbar-width: none;
+}
 
-.hide-scrollbars {
-  // scrollbar-gutter: stable;
+.dofullheight {
+  // scrollbar-width: none;
+  scrollbar-gutter: stable;
   overflow-y: scroll !important;
   text-rendering: optimizeSpeed;
 }
@@ -747,9 +757,9 @@ input[type=checkbox] + * {
 @import 'css/picker.scss';
 
 // Quick fix for preview frame, shouldn't harm editor.
-html {
-  overflow-x: hidden;
-}
+// html {
+//   overflow-x: hidden;
+// }
 
 .stretch-over-parent {
   position: absolute;
@@ -786,7 +796,7 @@ html.doxray {
     filter: opacity(0.4) blur(1.5px);
   }
 
-  :has(> .xray) > :not(.xray, symbol, symbol *, defs, defs *, mask, mask *) {
+  :has(> .xray) > :not(.xray, .xray *, symbol, symbol *, defs, defs *, mask, mask *) {
     &, & * {
     visibility: hidden;
     transition-property: visibility;
@@ -805,15 +815,20 @@ html.doxray {
   }
 
   .xray  {
-    > * {
+    * {
       transition: filter .14s ease-in, visibility .1s;
       transition-delay: .06s;
     }
 
-    &:has(.highlight-descendant) > :not(.highlight-descendant) {
+    &:has(.highlight-descendant) > :not(:has(.highlight-descendant), .highlight-descendant) {
       filter: opacity(0.4) blur(1.5px);
     }
   }
+
+  // .xray:has(.highlight-descendant) :not(.highlight-descendant, :has(.highlight-descendant)) {
+  //     filter: opacity(0.4) blur(1.5px);
+  // }
+
 }
 
 label {
@@ -887,7 +902,7 @@ input[type=file]:not(:hover) {
 @import "css/countdown.scss";
 
 .calc-steps {
-  padding-left: 2rem !important;
+  padding-left: 3rem !important;
   // margin: auto !important;
   list-style: number !important;
 }
@@ -900,4 +915,8 @@ input[type=file]:not(:hover) {
 input, input[type] {
   // This significantly improves quality of using the editor with arbitrary stylesheets.
   appearance: auto;
+}
+
+ol li {
+  list-style-type: decimal !important;
 }

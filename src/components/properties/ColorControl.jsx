@@ -86,15 +86,25 @@ const pickers = {
 const pickerOptions = Object.keys(pickers).map(k => ({label: k, value: k}))
 
 const toRgb = converter('rgb');
+const toHsl = converter('hsl');
+
+export function toHslParams(colorString) {
+  const hsl = toHsl(clampGamut('hsl')(colorString));
+
+  return `${hsl.h},${(hsl.s * 100)}%,${(hsl.l * 100)}%`;
+}
 
 export const ColorControl = (props) => {
-  const { onChange, onUnset, value: origValue, resolvedValue, cssVar, cssFunc } = props;
-  const parsed = toRgb(clampGamut('hsl')(resolvedValue)) || {};
-  const value = resolvedValue;
-  const { nativeColorPicker } = get;
+  const { onChange: _onChange, value: origValue, resolvedValue, cssVar, cssFunc } = props;
   const {name, usages} = cssVar;
-
+  const { nativeColorPicker } = get;
   const dispatch = editTheme();
+
+  const isHslParams = cssFunc === 'hsl' || cssFunc === 'hsla';
+  const onChange = isHslParams ? (v => _onChange(toHslParams(v))) : _onChange;
+  const value = isHslParams ? `hsl(${resolvedValue})` : resolvedValue;
+  const parsed = toRgb(clampGamut('hsl')(value)) || {};
+
 
   const throttle = useThrottler({ ms: 20 });
   const opacity = parsed.alpha || 1;
@@ -112,28 +122,13 @@ export const ColorControl = (props) => {
   if (!nativeColorPicker) {
     return (
       <Fragment>
-        {useOk && <OklchColorControl {...{value, onChange}}/>}
+        {useOk && <OklchColorControl {...{value, onChange }}/>}
         <div style={{ display: 'flex', clear: 'both' }}>
           <CreateAlias key={value} {...{ value, origValue }} />
           <div style={{display: 'flex'}}>
             <button style={{borderTopRightRadius: 0, borderBottomRightRadius: 0, marginRight: 0, borderRight: 'none'}} onClick={()=>setUseOk(false)} disabled={!useOk}>rgb/hsl</button>
             <button style={{borderTopLeftRadius: 0, borderBottomLeftRadius: 0}} onClick={()=>setUseOk(true)} disabled={useOk}>oklch</button>
           </div>
-          {/* <button
-            onClick={() => setHideColorPicker(!hideColorPicker)}
-            title={hideColorPicker ? 'Add a new color' : 'Hide color picker'}
-            style={{
-              width: '84px',
-              fontSize: '13px',
-              whiteSpace: 'nowrap',
-              clear: 'both',
-              height: `${PREVIEW_SIZE}`,
-              verticalAlign: 'bottom',
-              marginBottom: '2px',
-            }}
-          >
-            {!hideColorPicker ? 'Hide picker' : 'New color'}
-          </button> */}
         </div>
         {!useOk && (
           <Fragment>

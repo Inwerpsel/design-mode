@@ -73,6 +73,7 @@ export function FilterableVariableList(props) {
             maxHeight: '50vh',
             background: 'white',
             overflowY: 'scroll',
+            scrollBehavior: 'auto',
           }}
           onScroll={() => {
             if (performance.now() - timeAtRender > 200) {

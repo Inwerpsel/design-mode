@@ -104,7 +104,7 @@ export function ImageColors(props: {path: string}) {
 
     const rangeSize = maxHue - minHue || 360;
 
-    return <div>
+    return <div className='image-colors'>
         <br/>group: {group}
         <span style={{float: 'right'}}> {t}ms</span>
         <input
@@ -173,9 +173,11 @@ export function ImageColors(props: {path: string}) {
             <div
               style={{ border: '1px dashed black', width: '100%', height: '100%', fontSize: '2rem'}}
               onClick={() => {
-                const currentSize = maxHue - minHue;
-                // Shrink range 10 times
-                const halfNewRangeSize = currentSize / 20;
+                const isInRange = pickedHue > minHue && pickedHue < maxHue;
+                const currentSize = isInRange ? maxHue - minHue : 360;
+                const newRangeSize = currentSize / 4;
+
+                const halfNewRangeSize = newRangeSize / 2;
                 setMinHue(pickedHue - halfNewRangeSize);
                 setMaxHue(pickedHue + halfNewRangeSize)
               }}

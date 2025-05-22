@@ -155,7 +155,7 @@ export function OklchColorControl({value, onChange}) {
           <input id="alpha" type="range" min={0} max={1} value={alpha} step={0.01} onChange={e =>onChange(oklch(l, c, h, Number(e.target.value)))} />
         </div>
         <OnlinePickerLink {...{l,c,h}} />
-        {!value.startsWith('oklch(') && <button onClick={() => {onChange(oklch(l, c, h, alpha))}}>convert</button>}
+        <button disabled={value.startsWith('oklch(')} onClick={() => {onChange(oklch(l, c, h, alpha))}}>convert</button>
         {isNotInGamut && <span style={{color: 'red', fontWeight: 'bold'}}> Color does not exist</span>}
       </div>
     );

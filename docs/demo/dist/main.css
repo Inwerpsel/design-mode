@@ -104,6 +104,7 @@ body {
   transform-origin: 0 0;
 }
 .responsive-frame-container iframe {
+  max-width: none;
   background-color: white;
 }
 .responsive-frame-container:fullscreen {
@@ -872,7 +873,12 @@ button:disabled {
   visibility: hidden !important;
 }
 
-.hide-scrollbars {
+.editor-doc {
+  scrollbar-width: none;
+}
+
+.dofullheight {
+  scrollbar-gutter: stable;
   overflow-y: scroll !important;
   text-rendering: optimizeSpeed;
 }
@@ -901,9 +907,14 @@ input[type=checkbox] + * {
   border-radius: 0 !important;
 }
 
+.oklch-picker input[type=range], .image-colors input[type=range] {
+  max-width: none !important;
+}
+
 .oklch-picker input[type=range] {
   border: none !important;
   min-height: 0;
+  height: auto !important;
   padding: 0 !important;
   outline: none !important;
   --picked: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
@@ -924,7 +935,7 @@ input[type=checkbox] + * {
 #alpha {
   position: absolute;
   top: 41px;
-  max-width: 352px;
+  max-width: 352px !important;
   width: 352px;
   margin-left: -6px;
   box-sizing: border-box;
@@ -1033,10 +1044,6 @@ input[type=checkbox] + * {
   margin-bottom: 20rem;
 }
 
-html {
-  overflow-x: hidden;
-}
-
 .stretch-over-parent {
   position: absolute;
   top: 0;
@@ -1073,11 +1080,11 @@ html.doxray .xray > :hover, html.doxray .xray > .highlight-descendant {
   outline: 3px solid yellowgreen;
   outline-offset: 2px;
 }
-html.doxray .xray > * {
+html.doxray .xray * {
   transition: filter 0.14s ease-in, visibility 0.1s;
   transition-delay: 0.06s;
 }
-html.doxray .xray:has(.highlight-descendant) > :not(.highlight-descendant) {
+html.doxray .xray:has(.highlight-descendant) > :not(:has(.highlight-descendant), .highlight-descendant) {
   filter: opacity(0.4) blur(1.5px);
 }
 
@@ -1145,7 +1152,7 @@ input[type=file]:not(:hover) {
   }
 }
 .calc-steps {
-  padding-left: 2rem !important;
+  padding-left: 3rem !important;
   list-style: number !important;
 }
 
@@ -1156,6 +1163,10 @@ input[type=file]:not(:hover) {
 
 input, input[type] {
   appearance: auto;
+}
+
+ol li {
+  list-style-type: decimal !important;
 }
 
 /*# sourceMappingURL=main.css.map*/

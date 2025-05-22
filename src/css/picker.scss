@@ -10,11 +10,15 @@
         border-radius: 0 !important;
     }
 }
+.oklch-picker input[type=range], .image-colors input[type=range] {
+    max-width: none !important;
+}
 
 .oklch-picker input[type=range] {
     border: none !important;
     // filter: grayscale(1);
     min-height: 0;
+    height: auto !important;
     padding: 0 !important;
     outline: none !important;
     --picked: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
@@ -22,7 +26,7 @@
 
 
     &::-webkit-slider-thumb {
-        accent-color: oklch(var(--picked-lightness, 63%) var(--picked-chroma, 0.1) var(--picked-hue, 180));
+        accent-color: var(--picked);
     }
 
     &#hue, &:focus, .hovering-with-color {
@@ -41,8 +45,8 @@
 #alpha {
     position: absolute;
     top: 41px;
-    max-width: calc(340px + 12px);
-    width: calc(340px + 12px);
+    max-width: 352px !important;
+    width: 352px;
     margin-left: -6px;
     box-sizing: border-box;
     user-select: none;
@@ -52,6 +56,8 @@
 #hue,
 #lightness,
 #chroma {
+    // Put psuedo on the range element to extend it upward,
+    // so that you can also pick from the corresponding color preview.
     &:before {
         // Exclude alpha for now as it can be collapsed.
         content: "";
@@ -107,6 +113,10 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 
+    // Todo:
+    // - Check if it results in any visible error
+    // - Check how expensive this is
+    // - Check if can be accurate with less steps
     background: linear-gradient(
         to right in oklch,
         var(--fromgray) 0%,
@@ -183,7 +193,7 @@ $stripe-bg-r: repeating-linear-gradient(225deg,
     --to: oklch(var(--picked-lightness) var(--picked-chroma) var(--picked-hue));
     background: linear-gradient(to right in oklch, var(--from), var(--to)); 
 
-    // Shrink the picker is alpha is 1.
+    // Shrink the picker if alpha is 1.
     --offset: calc(42px * min(1, 1000 * (1 - var(--picked-alpha, 1))));
 
     #alpha {
