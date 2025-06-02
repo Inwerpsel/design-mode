@@ -146,7 +146,10 @@ function storePins() {
 
 // Pin state for a key to an index in the history array, then trigger render.
 export function addPin(id: string, index: number): void {
-  pins.set(id, index);
+  if (index < 0) {
+    debugger;
+  }
+  pins.set(id, Math.max(index, 0));
   pinVersion++;
   forceHistoryRender();
   notifyOne(id);
@@ -386,9 +389,9 @@ export const interestingKeys = ['themeEditor', 'uiLayout', 'inspectedPath', 'not
 
 // This function is used to determine which states should be visited when using fast navigation.
 // Hard coded to keep it simple for now, it could be user configurable.
-export function isInterestingState(lastActions) {
+export function isInterestingState(lastActions, currentIndex: number) {
   for (const k of interestingKeys) {
-    if (pins.has(k)) continue;
+    if (pins.has(k) && pins.get(k) !== currentIndex) continue;
     if (lastActions.has(k)) {
       return true;
     }
@@ -448,13 +451,14 @@ export function replaySavedStash(index) {
 
 export function removedSavedStash(index) {
 
-  savedStashes.splice(index);
+  savedStashes = savedStashes.filter((s,i) => i !== index);
+  // savedStashes.splice(index);
   storeAlternate();
   forceHistoryRender();
 }
 
 export function clearAlternate() {
-  if (lastAlternate.length > historyWarnOnUpdateLimit && !confirm(`Clear ${lastAlternate.length} steps?`)) {
+  if (lastAlternate.length > protectedStashMinSize && !confirm(`Clear ${lastAlternate.length} steps?`)) {
     return;
   }
   lastAlternate = [];
@@ -464,7 +468,7 @@ export function clearAlternate() {
 // Amount of steps back in time.
 let historyOffset = 0;
 // Prompt before destroying future when this many steps back in history.
-let historyWarnOnUpdateLimit = 8;
+let protectedStashMinSize = 8;
 // The tail of the history.
 let states = new Map<string, any>();
 // The state that was rendered before the last state transition.
@@ -502,7 +506,7 @@ export function historyBack(amount = 1, skipPinned = false): void {
   let offset = Math.min(past.length, historyOffset + amount);
 
   if (skipPinned) {
-    while (offset < past.length && isFullyPinned(past[past.length - offset])) {
+    while (offset < past.length && isFullyPinned(past[past.length - offset], past.length - offset)) {
        offset++;
     }
   }
@@ -520,7 +524,7 @@ export function historyForward(amount = 1, skipPinned = false): void {
   let offset = Math.max(0, historyOffset - amount);
 
   if (skipPinned) {
-    while (offset > 0 && isFullyPinned(past[past.length - offset])) {
+    while (offset > 0 && isFullyPinned(past[past.length - offset], past.length - offset)) {
        offset--;
     }
   }
@@ -529,9 +533,9 @@ export function historyForward(amount = 1, skipPinned = false): void {
   checkNotifyAll();
 }
 
-function isFullyPinned(entry: HistoryEntry) {
+function isFullyPinned(entry: HistoryEntry, currentIndex: number) {
   for (const key of entry.lastActions.keys()) {
-    if (!pins.has(key)) return false;
+    if (!pins.has(key) || pins.get(key) === currentIndex) return false;
   }
   return true;
 }
@@ -552,8 +556,9 @@ export function historyBackFast(): void {
   let newOffset = historyOffset;
   while (newOffset < past.length) {
     newOffset++;
-    const entry = past[past.length - newOffset];
-    if (isInterestingState(entry.lastActions)) {
+    const newIndex = past.length - newOffset;
+    const entry = past[newIndex];
+    if (isInterestingState(entry.lastActions, newIndex)) {
       break;
     }
   }
@@ -575,8 +580,9 @@ export function historyForwardFast(): void {
   }
   while (newOffset > 0) {
     newOffset--;
-    const actions = newOffset === 0 ? lastActions : past[past.length - newOffset].lastActions;
-    if (isInterestingState(actions)) {
+    const newIndex = past.length - newOffset;
+    const actions = newOffset === 0 ? lastActions : past[newIndex].lastActions;
+    if (isInterestingState(actions, newIndex)) {
       break;
     }
   }
@@ -692,6 +698,15 @@ export function addUnprocessedAction(key, action): void {
 export function performAction(id, action, options?: HistoryOptions): void {
   const wasPast = historyOffset > 0;
 
+  const mainPin = pins.get('themeEditor');
+  if (
+    id === 'themeEditor' &&
+    mainPin !== -1 &&
+    mainPin < past.length - historyOffset
+  ) {
+    return;
+  }
+
   // Reliably prevent certain actions from changing history.
   if (wasPast && options?.appendOnly) {
     return;
@@ -737,7 +752,6 @@ export function performActionOnLatest(id, action, options: HistoryOptions = {}):
     typeof action === 'function' ? action(baseState) : action
   );
   if (newState === baseState && !options.force) {
-    console.log('no change for', id);
     return false;
   }
   const becameInitialValue = newState === initialStates.get(id);
@@ -948,12 +962,17 @@ function performActionOnPast(id, action, options: HistoryOptions = {}): boolean 
     return false;
   }
 
+  const mainPin = pins.get('themeEditor');
+
+  if (mainPin > baseIndex) {
+    // Quick fix to prevent buggy handling of pinned actions.
+    return false;
+  }
+
+
   const now = performance.now();
-  if (lastAlternate.length > historyWarnOnUpdateLimit && !options.force) {
+  if (lastAlternate.length > protectedStashMinSize && !options.force) {
     savedStashes.push([lastAlternateIndex, lastAlternate]);
-    // if (!window.confirm(`You're about to lose ${lastAlternate.length} stashed changes, proceed?`)) {
-    //   return false;
-    // }
   }
 
   const pinIndex = pins.has(id) ? pins.get(id) : baseIndex;

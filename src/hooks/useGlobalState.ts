@@ -12,7 +12,7 @@ const dispatchers: SetsOfDispatchers = {};
 
 // This is a version of useLocalStorage, where simply all code related to storing was removed.
 // Not sure if it's the best way to do global state.
-export function useGlobalState<T>(key: string, defaultValue: T): StateAndUpdater<T> {
+export function useGlobalState<T>(key: string, defaultValue: T, debug = (v) => {}): StateAndUpdater<T> {
   const isRepeat = initializers.hasOwnProperty(key);
 
   const initializer = isRepeat ? initializers[key] : () => {
@@ -23,7 +23,12 @@ export function useGlobalState<T>(key: string, defaultValue: T): StateAndUpdater
     dispatchers[key] = new Set();
 
     setters.set(key, arg => {
-      const newValue = typeof arg === 'function' ? arg(states.get(key)) : arg;
+      debug(arg);
+      const previous = states.get(key);
+      const newValue = typeof arg === 'function' ? arg(previous) : arg;
+      if (newValue === previous) {
+        return;
+      }
       states.set(key, newValue);
       for (const setValue of dispatchers[key].values()) {
         setValue(newValue);

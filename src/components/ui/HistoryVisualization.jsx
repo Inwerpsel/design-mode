@@ -60,6 +60,12 @@ function ExplainPins() {
   </Fragment>;
 }
 
+// Quick fix to prevent dragging the history component, it often happens while toggling pins.
+const interceptDrag = {
+      draggable: true,
+      onDragStart: e=>e.stopPropagation(),
+};
+
 function PinState(props) {
   const { id, historyIndex } = props;
   const { 
@@ -74,6 +80,7 @@ function PinState(props) {
 
   return <Fragment>
     <button
+      {...interceptDrag}
       className={pinnedHere ? 'pinned-here' : ''}
       style={{
         outline: pinnedHere ? '2px solid black' : 'none',
@@ -99,15 +106,29 @@ function PinLatest(props) {
   const pinIndex = pins.get(id);
   const pinnedAtLatest = pinIndex === latestForId;
 
-  return <button className={pinnedAtLatest ? 'pinned-latest' : 'pin-latest'} style={{
-    float: 'right',
-    outline: pinnedAtLatest ? '2px solid black' : 'none',
-    background: pinnedAtLatest ? 'white' : 'transparent',
-  }} onClick={pinnedAtLatest ? () => {removePin(id)} : () => {
-    pinLatest(id);
-  }} title="Pin to latest">
-    <span className='pin'>📌</span>→
-  </button>
+  return (
+    <button
+      {...interceptDrag}
+      className={pinnedAtLatest ? 'pinned-latest' : 'pin-latest'}
+      style={{
+        float: 'right',
+        outline: pinnedAtLatest ? '2px solid black' : 'none',
+        background: pinnedAtLatest ? 'white' : 'transparent',
+      }}
+      onClick={
+        pinnedAtLatest
+          ? () => {
+              removePin(id);
+            }
+          : () => {
+              pinLatest(id);
+            }
+      }
+      title='Pin to latest'
+    >
+      <span className='pin'>📌</span>→
+    </button>
+  );
 }
 
 function PinFirst(props) {
@@ -119,23 +140,37 @@ function PinFirst(props) {
   const pinnedIndex = pins.get(id);
   const pinnedInitial = pinnedIndex === 0;
 
-  return <button className={pinnedInitial ? 'pinned-initial' : ''} style={{
-    float: 'right',
-    outline: pinnedInitial ? '2px solid black' : 'none',
-    background: pinnedInitial ? 'white' : 'transparent',
-    // visibility: pinnedAtLatest ? 'visible' : null,
-  }} onClick={pinnedInitial ? () => {removePin(id)} : () => {
-    pinInitial(id);
-  }} title="Pin to initial">
-   ←<span className='pin'>📌</span>
-  </button>
+  return (
+    <button
+      {...interceptDrag}
+      className={pinnedInitial ? 'pinned-initial' : ''}
+      style={{
+        float: 'right',
+        outline: pinnedInitial ? '2px solid black' : 'none',
+        background: pinnedInitial ? 'white' : 'transparent',
+        // visibility: pinnedAtLatest ? 'visible' : null,
+      }}
+      onClick={
+        pinnedInitial
+          ? () => {
+              removePin(id);
+            }
+          : () => {
+              pinInitial(id);
+            }
+      }
+      title='Pin to initial'
+    >
+      ←<span className='pin'>📌</span>
+    </button>
+  );
 }
 
 function MoreCommands({id}) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{position: 'relative'}}>
+    <div {...interceptDrag} style={{position: 'relative'}}>
       <ToggleButton controls={[open, setOpen]}>...</ToggleButton>
       {open && <div style={{position: 'absolute', top: '100%'}}>
         <ClearState {...{id}}/>
@@ -202,7 +237,7 @@ function ActionList(props) {
             {icon}
             {!Preview && (
               <span>
-                <b>{id}</b>
+                <b>{id.substring(0, 128)}</b>
                 {name}
               </span>
             )}
@@ -340,7 +375,7 @@ export function HistoryVisualization() {
               typeof action === 'object' || states.get(id) !== pointedStates.get(id)
           );
 
-          if (!isPresent && !showAll && index !== 0 && amount !== 1 && !isInterestingState(lastActions)) {
+          if (!isPresent && !showAll && index !== 0 && amount !== 1 && !isInterestingState(lastActions, index)) {
             // Always display an entry if state is pinned to its index
             const keys = [...lastActions.keys()];
             const anyPinnedHere = keys.some(id=>pins.has(id) && pins.get(id) === index);
