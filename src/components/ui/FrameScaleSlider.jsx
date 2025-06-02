@@ -60,8 +60,8 @@ export function FrameScaleSlider() {
       </datalist>
       <Tutorial tasks={[
         get => [
-          'Increase the zoom level to 2 or more.',
-          scale >= 2,
+          'Zoom in or out',
+          scale !== 1,
         ],
       ]} el={FrameScaleSlider}>
         Zoom in and out here. You can also scroll above the element.

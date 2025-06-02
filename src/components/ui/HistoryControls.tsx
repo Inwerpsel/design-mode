@@ -89,8 +89,10 @@ function Dots({amount}) {
     dots.push(i);
   }
 
+  const skipDrag = amount > 60;
+
   return <div style={{position: 'absolute', top: '4px', left: '2.4px', width: 'calc(100% - 7px)', display: 'flex', justifyContent: 'space-between'}}>
-    {dots.map(i => <span onDragEnter={() => {
+    {dots.map(i => <span onDragEnter={skipDrag ? null : () => {
       historyGo(amount - i - 1);
     }} key={i} style={{height: '6px', borderLeft: '1px solid #646262'}}/>)}
   </div>
@@ -131,7 +133,7 @@ function scrollToPoint(length, event: MouseEvent) {
 }
 function scrollWhileDragging(length, ref, event) {
   // Checking for hover as a simple way to exclude a swipe from the top on touch screens.
-  if (event.pressure > 0.01 && ref.current?.matches(':hover')) {
+  if (event.pressure > 0.01 && ref.current?.matches(':hover, :active')) {
     scrollToPoint(length, event);
   }
 }
@@ -218,6 +220,7 @@ export function ActivePins() {
 
 function PinList({close}) {
   const { pins, past, historyOffset, states } = useContext(HistoryNavigateContext);
+  // Keep original pins so that you can toggle them on and off while the menu is shown.
   const [origPins] = useState(new Map(pins));
   const entries = [...origPins.entries()];
   const ref = useRef();
@@ -261,7 +264,7 @@ function PinList({close}) {
             </button>
             {icons[key] || ''} {key}: { typeof value === 'object' ? '[obj]' : value}
             <ClearState {...{id: key}} />
-            {targetOffset !== historyOffset && <button onClick={(event) => {
+            {targetOffset !== historyOffset && <button title={targetOffset} onClick={(event) => {
               historyGo(targetOffset);
               // Keep lock menu open.
               event.stopPropagation();

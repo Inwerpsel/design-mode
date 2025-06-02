@@ -175,7 +175,8 @@ export function statelessSelector(selectors) {
 
 export const extractPageVariables = async() => {
   const startTime = performance.now();
-  const sheets = [...document.styleSheets].filter(s=>s.ownerNode?.id!==styleId);
+  // Quick fix to ignore styles added by the editor.
+  const sheets = [...document.styleSheets].filter(s=>s.ownerNode?.id!==styleId && !s.ownerNode?.href?.includes('/dist/main.css'));
   const asObject = await sheets.reduce(collectSheetVars, {});
 
   activeScopes = Object.keys(definedValues).filter(scopeSelector => document.querySelectorAll(scopeSelector).length > 0);

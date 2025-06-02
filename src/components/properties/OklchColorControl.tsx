@@ -124,7 +124,7 @@ export function OklchColorControl({value, onChange}) {
             onChange(oklch(l * 100, c, h, alpha));
           }
         }}>
-          <input onChange={e=>onChange(oklch(Number(e.target.value), c, h, alpha))} id="lightness" type="range" min={0} max={100} value={l} step={0.1} />
+          <input onChange={e=>onChange(oklch(Number(e.target.value), c, h, value ==='transparent' ? 1 : alpha))} id="lightness" type="range" min={0} max={100} value={l} step={0.1} />
         </div>
         <div className="oklch-chroma">
           <input

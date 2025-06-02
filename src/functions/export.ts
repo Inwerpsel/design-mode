@@ -11,9 +11,9 @@ export function saveAsJsonFile(data, fileName) {
   const url  = URL.createObjectURL(blob);
 
   const a = document.createElement('a');
-  a.download    = `${fileName || 'theme'}.json`;
+  a.download    = `${fileName}.json`;
   a.href        = url;
-  a.textContent = 'Download backup.json';
+  a.textContent = 'Download json';
   a.click();
 }
 

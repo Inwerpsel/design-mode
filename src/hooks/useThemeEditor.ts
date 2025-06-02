@@ -245,8 +245,9 @@ export function useThemeEditor() {
 
 // A function that returns the themeEditor dispatcher only, without listening.
 // Doing this locally, but would be nice to have a catch all way with proper types.
+const dispatcher = useDispatcher('themeEditor');
 export function editTheme() {
-  return useDispatcher('themeEditor');
+  return dispatcher;
 }
 
 

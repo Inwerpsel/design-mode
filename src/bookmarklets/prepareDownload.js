@@ -1,5 +1,5 @@
 javascript: void (() => {
-  const removeElements = 'script, iframe, link:is([rel=preload], [rel=preconnect], [rel="dns-prefetch"])';
+  const removeElements = 'script, iframe, link:is([rel=preload], [rel=preconnect], [rel="dns-prefetch"], [rel="modulepreload"])';
   try {
     [...document.querySelectorAll(removeElements)].forEach((e) =>
       e.parentNode.removeChild(e)

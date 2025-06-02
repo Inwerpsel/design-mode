@@ -1,10 +1,10 @@
 import { Fragment, useContext, useEffect, useState } from "react";
-import { getCurrentOffset, goToStart, historyForwardOne, HistoryNavigateContext } from "../../hooks/useResumableReducer";
+import { getCurrentOffset, goToStart, historyForward, historyForwardOne, HistoryNavigateContext } from "../../hooks/useResumableReducer";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { Checkbox } from "../controls/Checkbox";
 import { get } from "../../state";
 import { useGlobalState } from "../../hooks/useGlobalState";
-import { viewTransitionsEnabled } from "../../functions/viewTransition";
+import { doTransition, viewTransitionsEnabled } from "../../functions/viewTransition";
 
 function CountTimeInState({ms}) {
   if (ms < 3999) {
@@ -25,7 +25,7 @@ function CountTimeInState({ms}) {
 }
 
 export function Play() {
-  const {playTime }= get;
+  const { playTime } = get;
   const [on, setOn] = useGlobalState('playing', false);
   const [loop, setLoop] = useState(false);
   const [_ms, setMs] = useLocalStorage('replayMs', 1000);
@@ -46,7 +46,9 @@ export function Play() {
                     clearInterval(interval);
                 }
             } else {
-                historyForwardOne();
+                doTransition(() => {
+                  historyForward(1, true);
+                });
             }
         }, ms);
         let docClickListener;

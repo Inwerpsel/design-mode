@@ -399,7 +399,6 @@ export function Palette() {
         onClick={() => {
           if (pickedValue !== '' && !values.some(({value}) => value === pickedValue)) {
             setValues([{ value: pickedValue, isHtml: false }, ...values]);
-            console.log('test');
             setPickedValue('');
           }
         }}

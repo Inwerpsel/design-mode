@@ -40,6 +40,8 @@ export const sizeLikeProperties = [
   'inline-size',
   'max-inline-size',
   'min-inline-size',
+  'scroll-padding-top',
+  'scroll-margin-top',
 ];
 
 const remSize = 16;
@@ -54,7 +56,7 @@ const isVh = value => value && value.match(/vh$/);
 const isVw = value => value && value.match(/vw$/);
 
 export const SizeControl = props => {
-  const {onChange, value, resolvedValue} = props;
+  const {onChange, value: _value, resolvedValue: value} = props;
   const [step, setStep] = useState(.1);
 
   const pxValue = isPx(value) ? value.replace('px', '') : isRem(value) ? convertRemToPixels(parseFloat(value.replace('rem', ''))) : '';
@@ -144,10 +146,10 @@ export const SizeControl = props => {
     >0
     </button>
     <button onClick={() => {
-      onChange(`calc(${value})`);
+      onChange(`calc(${_value})`);
     }}>Calculate</button>
     <TextControl
-      value={ value }
+      value={ _value }
       onChange={ onChange }
     />
   </div>;

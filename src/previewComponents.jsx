@@ -12,15 +12,17 @@ import { ScrollInViewButton } from './components/inspector/ScrollInViewButton';
 import { HistoryNavigateContext, otherUrls } from './hooks/useResumableReducer';
 import { firstEntry } from './_unstable/historyStore';
 
-const size = 18;
+const size = 24;
 
 function FindOther({label}) {
   const [first, ...classes] = label.replace(/\s*\(\d\/\d\)$/, '').split('.').map(s=>s.trim());
   // const [name, id] = k.split('#').map(s=>s.trim());
   const [open, setOpen] = useState(false);
 
+  const fullLabel = label.length > 74 ? `${label.substring(0, 70)}...` : label;
+
   return <Fragment>
-    <Checkbox controls={[open, setOpen]}><div>{!open ? label : <span>close</span>}</div></Checkbox>
+    <Checkbox controls={[open, setOpen]}><div>{!open ? fullLabel : <span>close</span>}</div></Checkbox>
       {open && <Fragment>
         <ElementLocator selector={first} initialized showLabel />
         {classes.map(className => <ElementLocator selector={`.${className}`} initialized showLabel/>)}
@@ -91,10 +93,12 @@ export const previewComponents = {
   
     const showLink = isFromBeforeSession && (url !== window.location.href);
 
+    const label = group?.label;
+
     return (
       <Fragment>
         <ScrollInViewButton {...{path}} />
-        <pre className="monospace-code">{group?.label}</pre>
+        <pre className="monospace-code">{label.length > 74 ? `${label.substring(0, 70)}...` : label}</pre>
         {showLink && link}
       </Fragment>
     );
@@ -111,6 +115,7 @@ export const previewComponents = {
           <span draggable onDragStart={dragValue(value)}>
             {(COLOR_VALUE_REGEX.test(value) ||
               GRADIENT_REGEX.test(value) ||
+              /^url/.test(value) ||
               /var\(/.test(value)) && (
               <span
                 style={{
@@ -128,7 +133,7 @@ export const previewComponents = {
                 }}
               ></span>
             )}
-            {value}
+            {value.length > 124 ? `${value.substring(0, 120)}...` : value}
           </span>
           {alternatives?.length > 0 && (
             <div>

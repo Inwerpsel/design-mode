@@ -6,7 +6,9 @@ export function HistoryStash() {
     const { lastAlternate, historyOffset, past, lastAlternateIndex, savedStashes } =
       useContext(HistoryNavigateContext);
 
-    const position = past.length - historyOffset - lastAlternateIndex;
+    const index = past.length - historyOffset;
+    const isStart = index < 1;
+    const position =  index - lastAlternateIndex;
 
     const empty = lastAlternate.length === 0;
     const content = empty 
@@ -28,7 +30,7 @@ export function HistoryStash() {
                 1
               )})`,
             }}
-            disabled={empty && historyOffset === 0}
+            disabled={empty && (isStart || historyOffset === 0)}
           >
             {content}
           </button>

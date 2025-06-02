@@ -91,5 +91,5 @@ export function deleteStoredHistory(createSnap = false, lastState = null) {
     }
     firstEntry = Infinity;
 
-    console.log('Start store delete transaction in ', performance.now( ) - start) 
+    // console.log('Start store delete transaction in ', performance.now( ) - start) 
 }

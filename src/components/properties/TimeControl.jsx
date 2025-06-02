@@ -30,7 +30,7 @@ export const TimeControl = props => {
     <SelectControl
       style={{display: 'inline'}}
       options={timingSteps.map(valuesAsLabels)}
-      selected={ step }
+      value={ step }
       onChange={ value => {
         setStep(value);
       } }

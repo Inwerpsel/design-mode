@@ -124,6 +124,8 @@ export function RemoveAnnoyingPrefix() {
             ? {background: 'lightblue'}
             : multiMode && multiSelection.has(prefix)
             ? {background: 'yellow'}
+            : !multiMode && prefix.startsWith(annoyingPrefix)
+            ? {background: 'yellow'}
             : {}
           }
           onClick={(multiMode ? addToMultiSelect : setPrefixAndCleanup).bind(null, prefix)}

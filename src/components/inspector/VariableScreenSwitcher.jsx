@@ -13,7 +13,12 @@ export const isOverridden = ({media, width, cssVar}) => {
     if (found) {
       // The order should correspond to CSS order. So after we found the current var name it should start
       // checking if a later one overrides it.
-      return mediaQuery.match(media, {width, ...mediaMatchOptions});
+      try {
+        return mediaQuery.match(media, {width, ...mediaMatchOptions});
+      } catch (e) {
+        console.log('css-mediaquery could not handle query', media);
+        return false;
+      }
     }
     if (queryVar.name === cssVar.name) {
       found = true;
