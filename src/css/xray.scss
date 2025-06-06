@@ -1,0 +1,98 @@
+
+// Todo
+// * Split off CSS that is only for the xray frame.
+// * Check selector performance, particularly `:has()`
+// * Improve quick fixes for definitions in SVG (long selectors)
+html {
+  scroll-padding-top: 0 !important;
+  // scrollbar-gutter: stable !important;
+  // overflow-y: hidden !important;
+  // text-rendering: optimizeSpeed;
+}
+
+// Quick fix that improves some elements being pushed down, and doesn't seem to cause problems otherwise.
+// :has(.xray) {
+//   margin-top: 0 !important;
+//   // will-change: filter, visibility;
+//   // transform: none;
+// }
+// * {
+//   transition: none !important;
+//   animation: none !important;
+// }
+:not(
+  table:has(.xray) *,
+  .is-a-grid:has(.xray) *,
+  :has(.xray),
+  :has(> .xray) > *,
+  :has(> .xray) > * *,
+  .xray,
+  .xray *,
+  symbol, symbol *, defs, defs *, mask, mask *
+) {
+  display: none !important;
+  visibility: hidden;
+  // transition-property: visibility;
+  // transition-delay: .16s;
+  filter: opacity(0.4) blur(1.5px);
+}
+
+:is(table, .is-a-grid) :not(
+  :has(.xray),
+  // :has(> .xray) > *,
+  // :has(> .xray) > * *,
+  :has(> .xray) *,
+  .xray,
+  .xray *) {
+
+  &, & * {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+:has(> .xray) > :not(.xray, .xray *, symbol, symbol *) {
+  // &, & * {
+  visibility: hidden;
+  transition-property: visibility;
+  transition-delay: .16s;
+  // Prevent blur filter from disappearing while elements are removed.
+  filter: opacity(0.4) blur(1.5px);
+  // }
+}
+
+defs *, mask, mask * {
+  visibility: visible !important;
+  filter: none !important;
+}
+
+
+.xray :hover, .xray .highlight-descendant {
+  outline: 3px solid yellow;
+}
+
+.xray > :hover, .xray > .highlight-descendant {
+  outline: 3px solid yellowgreen;
+  outline-offset: 2px;
+}
+
+.xray  {
+  // will-change: filter, visibility;
+
+  &, & > * {
+    scroll-margin-top: 0 !important;
+    scroll-padding-top: 0 !important;
+  }
+
+  * {
+    transition: filter .14s ease-in, visibility .1s;
+    transition-delay: .06s;
+  }
+
+  &:has(.highlight-descendant) > :not(:has(.highlight-descendant), .highlight-descendant) {
+    filter: opacity(0.4) blur(1.5px);
+  }
+}
+
+// .xray:has(.highlight-descendant) :not(.highlight-descendant, :has(.highlight-descendant)) {
+//     filter: opacity(0.4) blur(1.5px);
+// }

@@ -5,8 +5,16 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
     watch: true,
     entry: {
-        // bundle: './docs/src/index.js',
         main: './docs/demo/src/style.scss',
+        // preview
+        // If flag can disable all components referencing a sheet, the sheet can itself be disabled if the flag is off.
+        xray: './src/css/xray.scss',
+        // fullheightpreview
+        // view transitions
+        // tutorial
+
+
+        // Demo builds
         halfmoon: './docs/demo/halfmoon/style.scss',
     },
     output: {

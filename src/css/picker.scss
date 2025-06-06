@@ -218,11 +218,15 @@ $stripe-bg-r: repeating-linear-gradient(225deg,
 .picked-cursor {
     z-index: 10000000000000000;
     position: fixed;
-    top: 12px;
-    left: 12px;
-    width: 32px;
-    height: 32px;
-    background-color: var(--picked-value, red);
+    top: 16px;
+    left: 16px;
+    width: 36px;
+    height: 36px;
+    background-image: var(--picked-value);
+    background-size: cover;
+    background-color: var(--picked-value);
     border-radius: 50%;
+    border: 1px solid black;
     margin-bottom: 20rem;
+    // transition: transform 7ms ease-out;
 }

@@ -7,6 +7,7 @@ export default defineConfig({
   root: 'docs/demo',
   // base: '/use-theme-editor',
   build: {
+    sourcemap: true,
     target: 'es2015',
     rollupOptions: {
       input: {
@@ -15,7 +16,6 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         dir: 'docs/demo/dist',
-        sourcemap: true,
       },
     }
   },

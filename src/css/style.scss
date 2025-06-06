@@ -57,7 +57,8 @@ $focus-outline: 3px solid rgb(40, 155, 255);
   }
 
   h5 {
-      font-size: 16px !important;
+      // font-size: 16px !important;
+      font-size: 16px;
       margin-top: 0 !important;
   }
 
@@ -82,10 +83,6 @@ $focus-outline: 3px solid rgb(40, 155, 255);
     max-width: 120px;
   }
   display: inline-flex;
-  > * {
-    display: inline;
-    flex-shrink: 2;
-  }
 }
 
 .scroll-in-view {
@@ -95,16 +92,17 @@ $focus-outline: 3px solid rgb(40, 155, 255);
   }
 }
 
-.theme-editor *:not(.font-button, .monospace-code, .var-preview), .responsive-size-controls * {
+:where(.theme-editor *) {
   font-family: Roboto, sans-serif !important;
   color: black;
   line-height: initial;
 }
 
-.responsive-size-controls {
-  input {
-    width: 90px;
-  }
+.responsive-size-controls input {
+  width: 90px;
+  font-family: Roboto, sans-serif !important;
+  color: black;
+  line-height: initial;
 }
 
 .components-range-control__track {
@@ -288,6 +286,7 @@ $focus-outline: 3px solid rgb(40, 155, 255);
 .theme-editor-highlight {
   outline: 4px solid oklch(55.36% 0.2750 283.29) !important;
   outline-offset: -2px;
+  // will-change: outline-offset;
   animation: pulse .2s;
   // This allows you to see the edges better.
   // It doesn't entirely work well. Most of the time when dragging to view button it will have the class,
@@ -466,7 +465,7 @@ div[id^=font-picker] ul {
 
 // Quick and dirty way to visualize linked variables.
 // The big old equal sign works well visually, but pseudo element is not properly clickable.
-.var-control:not([data-nesting-level="0"]) > div:first-child:before {
+.var-control.var-is-link > div:first-child:before {
   _-- {
     content: "=" !important;
     font-size: 36px;
@@ -606,10 +605,6 @@ button {
   overflow: hidden !important;
   align-self: flex-start;
   flex-shrink: 0;
-
-  > svg {
-    // max-width: 100%;
-  }
 }
 
 .history-open-groups {
@@ -660,7 +655,7 @@ button {
 // however it seemed to get compiled incorrectly, losing the initial `>`,
 // That makes it match elements with non-direct descendants too.
 // Could also be due to some SCSS language quirk.
-:has(> .tutorial-content), .blink {
+.theme-editor :has(> .tutorial-content), .blink {
   animation: .7s linear 0s infinite blink;
 }
 
@@ -674,7 +669,7 @@ button {
   padding: .25rem;
   padding-left: 2rem;
 
-  :has(&) {
+  .theme-editor :has(&) {
     // A bit aggressive, but this is a simple way to display the tutorial message outside the normal area boundaries,
     // without messing with how scrolling works.
     // Have to make sure the tutorial always uses elements that are high in the area.
@@ -737,6 +732,13 @@ button:disabled {
   scrollbar-gutter: stable !important;
   // overflow-y: scroll !important;
   text-rendering: optimizeSpeed;
+
+  // svg, svg * {
+  //   shape-rendering: optimizeSpeed !important;
+  // }
+  * {
+    animation-play-state: paused !important;
+  }
 }
 
 .chrome-picker {
@@ -761,9 +763,9 @@ button:disabled {
 //   }
 // }
 
-input[type=checkbox] + * {
-  display: inline-block;
-}
+// input[type=checkbox] + * {
+//   display: inline-block;
+// }
 
 @import 'picker.scss';
 
@@ -782,79 +784,6 @@ input[type=checkbox] + * {
 
 .force-nodisplay {
   display: none !important;
-}
-
-// Todo
-// * Split off CSS that is only for the xray frame.
-// * Check selector performance, particularly `:has()`
-// * Improve quick fixes for definitions in SVG (long selectors)
-html.doxray {
-  scroll-padding-top: 0 !important;
-
-  // Quick fix that improves some elements being pushed down, and doesn't seem to cause problems otherwise.
-  :has(.xray) {
-    margin-top: 0 !important;
-    // will-change: filter, visibility;
-    // transform: none;
-  }
-  // * {
-  //   transition: none !important;
-  //   animation: none !important;
-  // }
-  :not(table:has(.xray) tr, table:has(.xray) tr *, .is-a-grid:has(.xray) > *, :has(.xray), :has(> .xray) > *, :has(> .xray) > * *, .xray, .xray *, symbol, symbol *, defs, defs *, mask, mask *) {
-    display: none !important;
-    visibility: hidden;
-    // transition-property: visibility;
-    // transition-delay: .16s;
-    filter: opacity(0.4) blur(1.5px);
-  }
-
-  :is(table, .is-a-grid) :not(:has(.xray), :has(> .xray) > *, :has(> .xray) > * *, .xray, .xray *) * {
-    &, & * {
-      visibility: hidden;
-    }
-  }
-
-  :has(> .xray) > :not(.xray, .xray *, symbol, symbol *, defs, defs *, mask, mask *) {
-    &, & * {
-    visibility: hidden;
-    transition-property: visibility;
-    transition-delay: .16s;
-    // Prevent blur filter from disappearing while elements are removed.
-    filter: opacity(0.4) blur(1.5px);
-  }}
-
-  .xray :hover, .xray .highlight-descendant {
-    outline: 3px solid yellow;
-  }
-
-  .xray > :hover, .xray > .highlight-descendant {
-    outline: 3px solid yellowgreen;
-    outline-offset: 2px;
-  }
-
-  .xray  {
-    // will-change: filter, visibility;
-
-    &, & > * {
-      scroll-margin-top: 0 !important;
-      scroll-padding-top: 0 !important;
-    }
-
-    * {
-      transition: filter .14s ease-in, visibility .1s;
-      transition-delay: .06s;
-    }
-
-    &:has(.highlight-descendant) > :not(:has(.highlight-descendant), .highlight-descendant) {
-      filter: opacity(0.4) blur(1.5px);
-    }
-  }
-
-  // .xray:has(.highlight-descendant) :not(.highlight-descendant, :has(.highlight-descendant)) {
-  //     filter: opacity(0.4) blur(1.5px);
-  // }
-
 }
 
 label {
@@ -960,6 +889,7 @@ input, input[type] {
   --bottom-area--height: 240px;
 }
 
+.theme-editor {
 .mask {
   background: transparent;
   position: absolute;
@@ -984,18 +914,22 @@ input, input[type] {
 }
 
 
-.masked-list:has(>.mask), .masked-list:has(>.mask) > :not(.mask) {
+// Needed on buttons for z-index.
+.masked-list:has(>.mask), .masked-list:has(>.mask) > button {
   position:  relative !important;
 }
 
-.masked-list:has(>.mask) > :not(.mask) {
+.masked-list:has(>.mask) > button {
   z-index: 2;
 }
-
-.relative {
-  position: relative;
 }
 
-.absolute {
-  position: absolute;
+.theme-editor {
+  .relative {
+    position: relative;
+  }
+
+  .absolute {
+    position: absolute;
+  }
 }
