@@ -31,6 +31,8 @@ export const use = {
     () => useResumableLocalStorage('width', 1024),
   height:
     () => useResumableLocalStorage('height', 768),
+  windowHeight: // The measured total height of the page.
+    () => useGlobalState('windowHeight', null as number|null),
   scales:
     () => useResumableLocalStorage('scales', {} as {[index: string]: string}),
   // prefersColorScheme:
@@ -47,7 +49,7 @@ export const use = {
   showRawValues:
     () => useResumableLocalStorage('showRawValues', false),
   excludedRawValues:
-    () => useResumableLocalStorage('excludedRawValues', ['initial', 'none'] as string[]),
+    () => useResumableLocalStorage('excludedRawValues', [] as string[]),
   frameClickBehavior:
     () => useGlobalState('frameClickBehavior', 'any' as 'any' | 'alt'),
   enableScrollingInView:
@@ -85,7 +87,7 @@ export const use = {
   visualizeHistoryAlways: 
     () => useLocalStorage('visualizeHistoryAlways', true),
   showScrolls:
-    () => useLocalStorage('showScrolls', true),
+    () => useLocalStorage('showScrolls', false),
   svgDarkBg:
     () => useLocalStorage('svgDarkBg', false),
   inspectedPath:
@@ -110,15 +112,36 @@ export const use = {
       const isSame = get.localThemeJson !== get.remoteThemeJson;
       return get.existsOnServer && isSame;
     })],
-  themeEditor:
-    () => useThemeEditor(),
+  themeEditor: useThemeEditor,
   // path: 
   //   () => useResumableLocalStorage('path', ''),
+  xrayFixGrids:
+    () => useLocalStorage('xrayFixGrids', true),
+  fullHeightFrame:
+    // Ideally this should useLocalStorage, but that currently fails to apply it on page load.
+    () => useLocalStorage('fullHeightFrame', true),
   fullHeightFrameShowFixed:
     // Ideally this should useLocalStorage, but that currently fails to apply it on page load.
     () => useGlobalState('fullHeightFrameShowFixed', true),
+  fullHeightFrameFixVh:
+    () => useLocalStorage('fullHeightFrameFixVh', true),
   fullHeightFrameScale:
     () => useResumableLocalStorage('fullHeightFrameScale', 0.05),
+  fullHeightFrameAutoScale:
+    () => useLocalStorage('fullHeightFrameAutoScale', true),
+  fullHeightFrameCalculatedScale:
+    () => [mem(get => {
+      const {windowHeight, fullHeightFrameScale} = get;
+      if (windowHeight === null) {
+        return fullHeightFrameScale;
+      }
+      // Deliberately not update on window height changes to avoid problems.
+      const editorWindowHeight = window.innerHeight;
+      const desiredSize = editorWindowHeight * 0.84;
+
+      return Math.min(desiredSize / windowHeight, 0.22);
+
+    })],
   elementSelectionMode: 
     () => useGlobalState('elementSelectionMode', false),
   maximizeChroma:
@@ -159,5 +182,6 @@ export const use = {
 // signals that aren't yet used.
 console.time('Getters and signals');
 export const get = getters(use);
+export const set = 0;
 export const $ = signals(use);
 console.timeEnd('Getters and signals');

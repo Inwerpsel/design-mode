@@ -22,16 +22,13 @@ import {CurrentTheme} from './ui/CurrentTheme';
 import { RemoveAnnoyingPrefix } from './inspector/RemoveAnnoyingPrefix';
 import { NameReplacements } from './inspector/NameReplacements';
 import { HistoryControls } from './ui/HistoryControls';
-import { FullHeightFrameScale, SmallFullHeightFrame } from './SmallFullHeightFrame';
+import { FullHeightFrameScale, ToggleableSmallFullHeightFrame } from './SmallFullHeightFrame';
 import { Inspector } from './ui/Inspector';
 import { get, use } from '../state';
 import { Hotkeys } from './Hotkeys';
 import { ColorSettings } from './ui/ColorSettings';
 import { InformationVisibilitySettings } from './ui/InformationVisibilitySettings';
 import { WebpackHomeInput } from './ui/WebpackHomeInput';
-import { SignalExample } from './_examples/SignalExample';
-// import { VoiceCommands } from './ui/VoiceCommands';
-// import { SpeakGlobalHooks } from '../voice/menu/state';
 import { HistoryVisualization } from './ui/HistoryVisualization';
 import { Palette } from './ui/Palette';
 import { HistoryStash } from './ui/HistoryStash';
@@ -68,7 +65,6 @@ export const ThemeEditor = (props) => {
   const [serverThemesDisplayed, setServerThemesDisplayed] = useLocalStorage('server-themes-displayed', true);
   const [sheetsDisablerDisplayed, setSheetDisablerDisplayed] = useState(false);
 
-  const [fullPagePreview, setFullPagePreview] = useLocalStorage('full-page-preview', false)
   const [openFirstOnInspect, setOpenFirstOnInspect] = use.openFirstOnInspect();
 
   return (
@@ -85,7 +81,6 @@ export const ThemeEditor = (props) => {
       <ApplyStyles />
       <AcceptDroppedOptions />
       <PickedValueCursor />
-      {/* <SpeakGlobalHooks hooks={use} /> */}
       <Hotkeys {...{frameRef}}/>
       <div className="theme-editor">
         <MovablePanels stateHook={use.uiLayout}>
@@ -135,7 +130,7 @@ export const ThemeEditor = (props) => {
               </div>
             </Area>
             <ResizableFrame src={window.location.href} />
-            {!!fullPagePreview && <SmallFullHeightFrame src={window.location.href} />}
+            <ToggleableSmallFullHeightFrame />
             
             <Area id="area-right">
               <Fragment id='ThemesList'>
@@ -188,10 +183,18 @@ export const ThemeEditor = (props) => {
               <FullscreenToggle />
               <CursorBehavior />
               <div id='InspectionSettings'>
-                <Checkbox
-                  controls={[fullPagePreview, setFullPagePreview]}
-                  title='WARNING!!! 1) Affects performance on large pages 2) If scrollable section is below body, it cannot be fully shown (e.g. Halfmoon) 3) Does not work properly for pages that have different styles based on screen height.'
-                >Full height preview</Checkbox>
+                <Checkbox2
+                  hook={use.fullHeightFrameFixVh}
+                  title='Becomes effective when reloading the page or toggling full height frame option.'
+                >
+                  Fix VH units in full height
+                </Checkbox2>
+                <Checkbox2
+                  hook={use.xrayFixGrids}
+                  title='Without this fix, widths inside of grids can be all over the place.'
+                >
+                  Fix grids in xray
+                </Checkbox2>
                 <Checkbox
                   controls={[openFirstOnInspect, setOpenFirstOnInspect]}
                   title="Whether a new inspection should leave the open groups unchanged, or it should set the open groups to only the first one of the new inspection."
@@ -213,8 +216,6 @@ export const ThemeEditor = (props) => {
               <WebpackHomeInput />
               <RemoveAnnoyingPrefix />
               <NameReplacements/>
-              {/* <SignalExample /> */}
-              {/* <VoiceCommands /> */}
               <CurrentTheme />
               <FullHeightFrameScale />
               <InformationVisibilitySettings />
