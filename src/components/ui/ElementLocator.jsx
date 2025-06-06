@@ -1,10 +1,8 @@
 import React, {
   Fragment,
   useContext,
-  useEffect,
   useMemo,
   useState,
-  useId,
 } from 'react';
 import {ThemeEditorContext} from '../ThemeEditor';
 import { allStateSelectorsRegexp, residualNotRegexp } from '../../functions/getMatchingVars';
@@ -13,6 +11,7 @@ import { toNode, toPath } from '../../functions/nodePath';
 import { addHighlight, removeHighlight } from '../../functions/highlight';
 import { getGroupsForElement } from '../../initializeThemeEditor';
 import { focusInspectedGroup } from '../ResizableFrame';
+import { onLongPress } from '../../functions/onLongPress';
 
 function removeStateSelectors(selector) {
   return selector
@@ -49,15 +48,16 @@ let lastScroll = 0;
 
 export function ElementLocator({
   selector,
-  hideIfNotFound,
-  hideIfOne,
-  children,
+  children = null,
+  label = '',
+  hideIfNotFound = false,
+  hideIfOne = false,
   showLabel = true,
   property = null,
-  label,
   allowScroll = false,
   allowDrag = true,
   instant = false,
+  onlyCurrentPath = false,
 }) {
   const { frameLoaded, openFirstOnInspect } = get;
 
@@ -94,9 +94,18 @@ export function ElementLocator({
     }
   }, [selector, frameLoaded, inspectedPath]);
 
-  const [currentElement, setCurrentElement] = useState(
-    Math.max(elements.findIndex((el) => el.isCurrentlyInspected),  0)
+  const currentIndex = useMemo(
+    () => elements.findIndex((el) => el.isCurrentlyInspected),
+    [elements]
   );
+
+  const [currentElement, setCurrentElement] = useState(
+    Math.max(currentIndex,  0)
+  );
+
+  if (onlyCurrentPath && currentIndex === -1) {
+    return null;
+  }
 
   if (elements.length === 0) {
     if (hideIfNotFound || hideIfOne) {
@@ -107,6 +116,7 @@ export function ElementLocator({
         {showLabel && (
           <div
             className="monospace-code"
+            style={{maxHeight: '7rem', maxWidth: '25rem', overflowY: 'auto'}}
             draggable={allowDrag}
             // draggable
             onDragStart={(e) => e.dataTransfer.setData('selector', selector)}
@@ -147,6 +157,7 @@ export function ElementLocator({
         : afterStep;
     setCurrentElement(next);
     const element = elements[next];
+    if (!element) return;
     if (instant) {
       setInspectedPath(toPath(element.node));
       if (openFirstOnInspect) {
@@ -174,7 +185,7 @@ export function ElementLocator({
     >
       {showLabel && (
         <div className="monospace-code"
-            style={{maxHeight: '5rem', overflowY: 'auto'}}
+            style={{maxHeight: '7rem',maxWidth: '25rem', overflowY: 'auto'}}
             draggable={allowDrag}
             // draggable
             onDragStart={e=>{
@@ -211,7 +222,16 @@ export function ElementLocator({
           {elements.length > 1 && (
             <Fragment>
               <button
-                onClick={() => {
+                // title='Go to previous. Long press goes to first.'
+                {...onLongPress(() => {
+                  setCurrentElement(0);
+                  if (instant) {
+                    setInspectedPath(toPath(elements[0].node));
+                  } else {
+                    viewHighLightSingle(elements[0].node);
+                  }
+                })}
+                onClick={(event) => {
                   const next =
                     currentElement === 0
                       ? elements.length - 1
@@ -227,6 +247,15 @@ export function ElementLocator({
                 ↑
               </button>
               <button
+                // title='Go to next. Long press goes to last.'
+                {...onLongPress(() => {
+                  setCurrentElement(elements.length - 1);
+                  if (instant) {
+                    setInspectedPath(toPath(elements.at(-1).node));
+                  } else {
+                    viewHighLightSingle(elements.at(-1).node);
+                  }
+                })}
                 onClick={() => {
                   const next =
                     currentElement === elements.length - 1
@@ -245,7 +274,7 @@ export function ElementLocator({
             </Fragment>
           )}
         </div>
-        <div style={{ flexShrink: 1, height: '6rem' }}>
+        <div style={{ flexShrink: 1, height: '5rem' }}>
           {!!element && !element.isCurrentlyInspected && (
             <button
               onClick={() => {
