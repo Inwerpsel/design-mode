@@ -1,48 +1,107 @@
-import React, { useEffect, useRef } from "react";
-import { get, use } from "../state";
+import React, { useContext, useEffect, useLayoutEffect, useRef } from 'react';
+import { use } from '../state';
+import { ThemeEditorContext } from './ThemeEditor';
 
-
+let pageXOffset = 0;
+let pageYOffset = 0;
 
 export function PickedValueCursor() {
-    const [pickedValue, setPickedValue] = use.pickedValue();
-    const ref = useRef();
+  const { frameRef, scrollFrameRef, xrayFrameRef } =
+    useContext(ThemeEditorContext);
+  const [pickedValue, setPickedValue] = use.pickedValue();
+  const ref = useRef();
 
-    useEffect(() => {
-        if (pickedValue === '') {
-            return;
-        }
-        const positionElement = (e)=> {
-            if (!ref.current) return;
-            const mouseY = e.clientY;
-            const mouseX = e.clientX;
-            
-            ref.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-        
-        }
+  const empty = pickedValue === '';
 
-        const listener = window.addEventListener('mousemove', positionElement)
-        return () => {
-            window.removeEventListener('mousemove', listener);
-        }
-    }, [pickedValue]);
-
-    useEffect(() => {
-        if (!pickedValue) {
-            return;
-        }
-        const l = document.addEventListener('click', (e) => {
-            // console.log(e.target, e.target.classList);
-            if (e.target.classList.contains('area') || !e.target.closest('.area')) {
-                setPickedValue('');
-            }
-        });
-
-        return () => {document.removeEventListener('click', l)}
-    }, [pickedValue]); 
-
-    if (pickedValue === '') {
-        return;
+  useEffect(() => {
+    if (empty) {
+      return;
     }
 
-    return <div {...{ref}} style={{ '--picked-value': pickedValue}} className="picked-cursor">{pickedValue}</div>;
+    function positionElement(e) {
+      if (!ref.current) return;
+      const x = e.clientX;
+      const y = e.clientY;
+
+      ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    }
+
+    function positionElementInFrame(e) {
+      if (!ref.current) return;
+      const x = e.screenX - pageXOffset;
+      const y = e.screenY - pageYOffset;
+
+      ref.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    }
+
+    let span = document.createElement('span');
+    span.addEventListener('mouseenter', (event) => {
+      ref.current.style.opacity = 1;
+      ref.current.removeChild(span);
+      pageXOffset = event.screenX - event.clientX;
+      pageYOffset = event.screenY - event.clientY;
+      positionElement(event);
+    });
+    span.style.position = 'fixed';
+    span.style.top = 0;
+    span.style.right = 0;
+    span.style.bottom = 0;
+    span.style.left = 0;
+    ref.current.style.opacity = 0;
+    ref.current.appendChild(span);
+
+    window.addEventListener('mousemove', positionElement);
+
+    if (frameRef.current) {
+        frameRef.current.contentWindow.addEventListener('mousemove', positionElementInFrame);
+    }
+    if (scrollFrameRef.current) {
+        scrollFrameRef.current.contentWindow.addEventListener('mousemove', positionElementInFrame);
+    }
+    if (xrayFrameRef.current) {
+        xrayFrameRef.current.contentWindow.addEventListener('mousemove', positionElementInFrame);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', positionElement);
+      frameRef.current.contentWindow.removeEventListener('mousemove', positionElementInFrame);
+      scrollFrameRef.current?.contentWindow.removeEventListener('mousemove', positionElementInFrame);
+      xrayFrameRef.current?.contentWindow.removeEventListener('mousemove', positionElementInFrame);
+    };
+  }, [empty]);
+
+  useLayoutEffect(() => {
+    if (empty) {
+      return;
+    }
+    const l = (e) => {
+      if (
+        !e.target.closest(
+          '.movable-element, .area > *, #fullHeightFrame, #drawer-wrapper'
+        )
+      ) {
+        setPickedValue('');
+        e.stopPropagation();
+      }
+    };
+    document.addEventListener('click', l);
+
+    return () => {
+      document.removeEventListener('click', l);
+    };
+  }, [empty]);
+
+  if (empty) {
+    return;
+  }
+
+  return (
+    <div
+      {...{ ref }}
+      style={{ '--picked-value': pickedValue }}
+      className='picked-cursor'
+    >
+      {pickedValue.length < 60 ? pickedValue : ''}
+    </div>
+  );
 }
