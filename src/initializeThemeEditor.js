@@ -7,7 +7,7 @@ import { filterMostSpecific } from './functions/getOnlyMostSpecific';
 import {getLocalStorageNamespace, setLocalStorageNamespace} from './functions/getLocalStorageNamespace';
 import {initializeConsumer} from './sourcemap';
 import { getAllDefaultValues } from './functions/getAllDefaultValues';
-import { deriveUtilitySelectors, parseCss } from './functions/parseCss';
+// import { deriveUtilitySelectors, parseCss } from './functions/parseCss';
 import { toNode } from './functions/nodePath';
 import { restoreHistory } from './_unstable/historyStore';
 import { makeCourses } from './_unstable/courses';
@@ -15,6 +15,13 @@ import { setServerConfig } from './hooks/useServerThemes';
 import { balancedVar } from './functions/balancedVar';
 import { definedValues } from './functions/collectRuleVars';
 import { furthest } from './functions/furthest';
+
+if (window.location.hash === '#xray') {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '../../dist/xray.css';
+  document.body.appendChild(link);
+}
 
 export function nukePointerEventsNone(target) {
   // Quick fix, disable pointer-events: none rule on all children
@@ -46,51 +53,54 @@ document.head.appendChild(scopesStyleElement);
 export const styleId = '__forced-styles__'
 scopesStyleElement.id = styleId;
 
-let ruleIndexes = {};
-
 document.title = `🖌${document.title}`;
 
-function toPropertyString(properties) {
-    let propertyString = '';
-    for (const prop in properties) {
-      // Leading space on first is needed to match CSS formated by the browser.
-      propertyString += ` ${prop}: ${properties[prop]} !important;`
-    }
-    return propertyString;
-}
+const DOLOG = false;
 
+const selectorRuleMap = new Map();
 // To guarantee a consistent index, rules are not deleted, but emptied instead.
-function updateRule(selector, properties) {
-  // Leading space is included in first property. Trailing here to ensure right empty behavior of 1 space.
-  const cssText = `${selector} {${toPropertyString(properties)} }`;
-
-  if (!(selector in ruleIndexes)) {
-    // New rule
-    ruleIndexes[selector] = scopesStyleElement.sheet.insertRule(cssText, Object.keys(ruleIndexes).length);
-    return;
+function updateRule(selector, properties, style, ruleMap) {
+  const isNew = !ruleMap.has(selector);
+  if (isNew) {
+    DOLOG && console.log('new rule', selector)
+    const index = style.sheet.insertRule( `${selector} {}`, style.sheet.cssRules.length);
+    const rule = style.sheet.cssRules[index];
+    ruleMap.set(selector, rule);
   }
 
-  const ruleIndex = ruleIndexes[selector];
-
-  if (scopesStyleElement.sheet.cssRules[ruleIndex].cssText === cssText) {
-    // Nothing to update.
-    return;
+  const rule = ruleMap.get(selector);
+  // Removed
+  for (const name of rule.style) {
+    if (!properties.hasOwnProperty(name)) {
+    DOLOG && console.log(selector, name, 'was removed')
+      rule.style.removeProperty(name);
+    }
   }
-  // Add new rule.
-  scopesStyleElement.sheet.insertRule(cssText, ruleIndex);
-  // Remove previous, thereby restoring precarious order.
-  scopesStyleElement.sheet.deleteRule(ruleIndex + 1);
+  // Added / updated
+  for (const [name, value] of Object.entries(properties)) {
+    if (rule.style.getPropertyValue(name) !== value) {
+      DOLOG && console.log(selector, name, value,  'was updated')
+      rule.style.setProperty(name, value, 'important');
+    }
+  }
 }
 
-// Throw away previous style elements and reconstruct new ones with the right values.
-export function updateScopedVars(scopes, resetAll = false) {
-  if (resetAll) {
-    [...scopesStyleElement.sheet.cssRules].forEach(() => scopesStyleElement.sheet.deleteRule(0))
-    ruleIndexes = {};
-  }
+export function updateStyles(scopes, style = scopesStyleElement, ruleMap = selectorRuleMap) {
+  DOLOG && console.time('apply styles');
   Object.entries(scopes).forEach( ([selector, scopeVars]) => {
-    updateRule(selector, scopeVars);
- });
+    updateRule(selector, scopeVars, style, ruleMap);
+  });
+
+  for (const [selector,rule] of ruleMap.entries()) {
+    if (!scopes.hasOwnProperty(selector)) {
+      DOLOG && console.log(selector,   'no longer appears', rule.style);
+      const names = [...rule.style];
+      for (const name of names) {
+        rule.style.removeProperty(name);
+      }
+    }
+  }
+  DOLOG && console.timeEnd('apply styles');
 }
 
 function destroyDoc() {
@@ -110,8 +120,6 @@ function extractionResults() {
 }
 
 let cssVars;
-let lastGroups = [];
-
 
 const groupCache = new WeakMap();
 
@@ -134,42 +142,42 @@ export function getGroupsForElement(element) {
 
 
 // References in base files used on the page, not accounting for modifications.
-export const sourceRefs = new Map();
+// export const sourceRefs = new Map();
 
-function mappedSet(varName, selector) {
-  let selectors = sourceRefs.get(varName);
-  if (!selectors) {
-    selectors = new Map();
-    sourceRefs.set(varName, selectors);
-  }
-  let properties = selectors.get(selector);
-  if (!properties) {
-    properties = new Set();
-    selectors.set(selector, properties);
-  }
-  return properties;
-}
+// function mappedSet(varName, selector) {
+//   let selectors = sourceRefs.get(varName);
+//   if (!selectors) {
+//     selectors = new Map();
+//     sourceRefs.set(varName, selectors);
+//   }
+//   let properties = selectors.get(selector);
+//   if (!properties) {
+//     properties = new Set();
+//     selectors.set(selector, properties);
+//   }
+//   return properties;
+// }
 
-// Not yet used.
-function initiateReferences(vars, defaultValues) {
-  // console.log(definedValues);
-  let match;
-  for (const [scope, properties] of Object.entries(definedValues)) {
-    for (const [name, value] of Object.entries(properties)) {
-      if (!value.includes('var(')) {
-        continue;
-      }
-      let tmp = value;
-      while (match = balancedVar(tmp)) {
-        // console.log(name, value, match);
-        tmp = match.post;
-        const set = mappedSet(match.body, scope);
-        set.add(name);
-      }
-    }
-  }
-  console.log(sourceRefs);
-}
+// // Not yet used.
+// function initiateReferences(vars, defaultValues) {
+//   // console.log(definedValues);
+//   let match;
+//   for (const [scope, properties] of Object.entries(definedValues)) {
+//     for (const [name, value] of Object.entries(properties)) {
+//       if (!value.includes('var(')) {
+//         continue;
+//       }
+//       let tmp = value;
+//       while (match = balancedVar(tmp)) {
+//         // console.log(name, value, match);
+//         tmp = match.post;
+//         const set = mappedSet(match.body, scope);
+//         set.add(name);
+//       }
+//     }
+//   }
+//   console.log(sourceRefs);
+// }
 
 let defaultValues;
 
@@ -185,7 +193,6 @@ export const setupThemeEditor = async (config) => {
   if (!isRunningAsFrame) {
     await dependencyReady;
     setServerConfig(config.serverThemes);
-    // updateScopedVars(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}'));
 
     cssVars = await extractPageVariables();
     const defaults = getAllDefaultValues(cssVars);
@@ -209,22 +216,21 @@ export const setupThemeEditor = async (config) => {
         };
       }
 
-      parseCss(text, {
-        comments,
-        rulesWithMap,
-        rogueAtRules,
-        sheet,
-      });
+      // parseCss(text, {
+      //   comments,
+      //   rulesWithMap,
+      //   rogueAtRules,
+      //   sheet,
+      // });
     }
     // console.timeEnd('new')
 
     // console.time('derive');
-    deriveUtilitySelectors({rulesWithMap, keyframesRules, selectorRules, testSelectors})
+    // deriveUtilitySelectors({rulesWithMap, keyframesRules, selectorRules, testSelectors})
     // console.timeEnd('derive');
 
-    // Quick fix because both frames are sending the same message.
-    let didRestoreHistory = false;
     destroyDoc();
+    document.documentElement.classList.add('editor-doc')
     const editorRoot = document.createElement( 'div' );
     renderSelectedVars(editorRoot, cssVars, defaults);
     restoreHistory();
@@ -318,7 +324,7 @@ export const setupThemeEditor = async (config) => {
 
   const messageListener = event => {
     const {type, payload} = event.data;
-    const {index, selector, scopes, resetAll, path} = payload || {};
+    const {index, selector, scopes} = payload || {};
 
     switch (type) {
     case 'scroll-in-view':
@@ -351,9 +357,6 @@ export const setupThemeEditor = async (config) => {
     case 'set-sheet-config':
       toggleStylesheets(JSON.parse(payload));
       break;
-      case 'set-scopes-styles': 
-        updateScopedVars(scopes, resetAll);
-        break;
       case 'force-scroll':
         ignoreScroll = true;
         window.scrollTo({top: payload.position, behavior: payload.shouldSmoothScroll ? 'smooth' : 'auto' });
@@ -372,7 +375,7 @@ export const setupThemeEditor = async (config) => {
             scrollDebounceTimeout = null;
           }
           // scrollListener && document.removeEventListener('scroll');
-          scrollListener = (event) => {
+          scrollListener = () => {
            if (ignoreScroll) {
               return;
             }
@@ -381,6 +384,7 @@ export const setupThemeEditor = async (config) => {
             }
           }
           document.addEventListener('scroll', scrollListener, {passive: true})
+          notifyParent();
         break;
     }
   };
