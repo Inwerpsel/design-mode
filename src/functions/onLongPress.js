@@ -1,22 +1,29 @@
+
 export function onLongPress(callback) {
   let timeout;
-  let preventClick = false;
+  let preventClick = true;
 
-  function start() {
+  function start(downEvent) {
+    preventClick = false;
     timeout = setTimeout(() => {
       preventClick = true;
-      callback();
+      setTimeout(() => {preventClick = false}, 400)
+      // Pass the pointer down event so that things like x and y coords can be used.
+      callback(downEvent);
     }, 400);
   }
 
   function clear() {
-    timeout && clearTimeout(timeout);
-    preventClick = false;
+    if (timeout) {
+      clearTimeout(timeout);
+      timeout = null;
+    }
   }
 
   function clickCaptureHandler(e) {
     if (preventClick) {
       e.stopPropagation();
+      e.preventDefault();
       preventClick = false;
     }
   }
@@ -25,10 +32,9 @@ export function onLongPress(callback) {
     onMouseDown: start,
     onTouchStart: start,
     onMouseUp: clear,
-    onDrag: clear,
-    onMouseLeave: clear,
-    onTouchMove: clear,
     onTouchEnd: clear,
+    onDrag: clear,
+
     onClickCapture: clickCaptureHandler
   };
 }

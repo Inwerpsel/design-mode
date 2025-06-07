@@ -29,7 +29,16 @@ export function getLocateSelector(scope, selector) {
 }
 
 function Usage(props) {
-  const {scope, selector, highLightMatch, position, property, isLocal, hideIfNotFound} = props;
+  const {
+    scope,
+    selector,
+    highLightMatch,
+    position,
+    property,
+    isLocal,
+    hideIfNotFound,
+    onlyCurrentPath = false,
+  } = props;
 
   const locateSelector = isLocal ? getLocateSelector(scope, selector) : selector;
 
@@ -48,7 +57,7 @@ function Usage(props) {
         selector={locateSelector}
         initialized
         showLabel
-        {...{property, hideIfNotFound}}
+        {...{property, hideIfNotFound, onlyCurrentPath}}
       >
       </ElementLocator>
     </li>
@@ -58,9 +67,11 @@ function Usage(props) {
 export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, scope = ':root'}) => {
   const [isLocal, setIsLocal] = useLocalStorage('use local scope selectors', true);
   const [hideIfNotFound, setHideNotFound] = useLocalStorage('hide not found usages', true);
+  const [onlyCurrentPath, setOnlyCurrentPath] = useLocalStorage('filter selectors current path', false);
   const [openSelectors, setOpenSelectors] = useState({});
   const visitedSelectors = {};
 
+  // const uniqueUsages = usages;
   const uniqueUsages = usages.filter(({selector}) => {
     if (selector in visitedSelectors) {
       visitedSelectors[selector]++;
@@ -71,7 +82,9 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
     return true;
   })
 
-  if (usages.length === 1 && !usages[0].selector) {
+  const justOne = usages.length === 1;
+
+  if (justOne && !usages[0].selector) {
     return null;
   }
   const isRootscope = scope.includes(':root');
@@ -79,7 +92,8 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
   return (
     <Fragment>
       {!isRootscope && <Checkbox controls={[isLocal, setIsLocal]} title={scope}>In local scope</Checkbox>}
-      <Checkbox controls={[hideIfNotFound, setHideNotFound]} title={scope}>Only on this page</Checkbox>
+      {!justOne && <Checkbox controls={[hideIfNotFound, setHideNotFound]}>Only on this page</Checkbox>}
+      {!justOne && <Checkbox controls={[onlyCurrentPath, setOnlyCurrentPath]}>Only inspected</Checkbox>}
       <ul>
         {uniqueUsages.map(({ property, selector, position }) => {
           const selectors = splitCommaSafeParentheses(selector);
@@ -90,7 +104,7 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
             return (
               <li key={selector} style={{ border: '1px solid gray' }}>
                 {!!position && <IdeLink {...position} />}
-                <h4
+                {!onlyCurrentPath && !hideIfNotFound && <h4
                   style={!highLightMatch ? {} : currentSelectorStyle}
                   onClick={() =>
                     setOpenSelectors({
@@ -108,7 +122,12 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
                       .trim()
                       .substring(0, 100)}
                   </div>
-                </h4>
+                </h4>}
+                <span className={'monospace-code'}>
+                <span className={'var-control-property monospace-code'}>
+                  {property}
+                </span>
+                </span>
                 {!openSelectors[selector] && (
                   <ul style={{ marginLeft: '16px' }}>
                     {selectors.map((selector) => (
@@ -119,9 +138,9 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
                           selector,
                           highLightMatch,
                           position,
-                          property,
                           isLocal,
                           hideIfNotFound,
+                          onlyCurrentPath,
                         }}
                       />
                     ))}
@@ -134,7 +153,7 @@ export const VariableUsages = ({usages, maxSpecificSelector, winningSelector, sc
           return (
             <Usage
               key={`${isLocal ? 'l' : 'g'}~${selector}`}
-              {...{ scope, selector, highLightMatch, position, property, isLocal, hideIfNotFound }}
+              {...{ scope, selector, highLightMatch, position, property, isLocal, hideIfNotFound, onlyCurrentPath }}
             />
           );
         })}

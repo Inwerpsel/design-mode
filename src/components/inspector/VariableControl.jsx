@@ -1,8 +1,8 @@
-import React, {useState, useMemo, Fragment, useContext, useRef} from 'react';
+import React, {useState, useMemo, Fragment, useContext} from 'react';
 import {mustBeColor, TypedControl} from './TypedControl';
-import { PSEUDO_REGEX, ACTIONS, ROOT_SCOPE} from '../../hooks/useThemeEditor';
+import { ACTIONS, ROOT_SCOPE} from '../../hooks/useThemeEditor';
 import classnames from 'classnames';
-import {COLOR_VALUE_REGEX, GRADIENT_REGEX, PREVIEW_SIZE} from '../properties/ColorControl';
+import {COLOR_VALUE_REGEX, GRADIENT_REGEX, PREVIEW_SIZE, toHslParams} from '../properties/ColorControl';
 import {match} from 'css-mediaquery';
 import {isOverridden, VariableScreenSwitcher} from './VariableScreenSwitcher';
 import {ThemeEditorContext} from '../ThemeEditor';
@@ -19,6 +19,7 @@ import { dragValue } from '../../functions/dragValue';
 import { findClosingBracket } from '../../functions/compare';
 import { CalcSizeControl, isSingleMathExpression } from '../properties/CalcSizeControl';
 import { onLongPress } from '../../functions/onLongPress';
+import { Variate } from './Variate';
 
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
 const format = name => {
@@ -85,7 +86,7 @@ export const FormatVariableName = ({name, style}) => {
   </span>;
 };
 
-export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, referencedVariable, isOpen, group}) => {
+export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, referencedVariable, isOpen, group, setPickedValue}) => {
   const size = PREVIEW_SIZE;
   const title = `${value}${!isDefault ? '' : ' (default)'}`;
   const isUrl = /url\(/.test(resolvedValue);
@@ -97,11 +98,13 @@ export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, r
 
   if (resolvedValue && presentable && resolvedValue !== 'currentcolor') {
     return (
-      <Fragment>
+      <span {...(!setPickedValue ? {} : onLongPress(() => {
+        setPickedValue(value);
+      }))}>
         <span
           className='var-preview'
           draggable
-          onDragStart={dragValue(resolvedValue)}
+          onDragStart={dragValue(value)}
           title={title}
           style={{
             width: size,
@@ -121,16 +124,12 @@ export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, r
           {/var\(/.test(value) && 'var'}
           {resolvedValue === 'transparent' && '👻'}
         </span>
-        <span style={{ float: 'right', marginRight: '4px' }}>
+        <span style={{ float: 'right', marginRight: '4px', maxWidth: '80%' }}>
           {referencedVariable && <FormatVariableName name={referencedVariable.name} />}
           {!referencedVariable && (isUrl ? null : value)}
         </span>
-      </Fragment>
+      </span>
     );
-  }
-  if (referencedVariable && isOpen) {
-    
-    return null;
   }
 
   const isContent = resolvedValue.startsWith('"') || resolvedValue.startsWith("'") || resolvedValue.startsWith('attr(');
@@ -138,7 +137,7 @@ export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, r
   const previewString = isContent ? resolvedValue.replaceAll('" "', '"\n"') : value;
   // const previewString = value;
 
-  return <span
+  return <span {...(!setPickedValue ? {} : onLongPress(() => {setPickedValue(value)}))}><span
     className='var-preview'
     draggable
     onDragStart={dragValue(value)}
@@ -153,7 +152,7 @@ export const PreviewValue = ({value, resolvedValue = value, cssVar, isDefault, r
     } }
   >
     { referencedVariable ? <FormatVariableName name={referencedVariable.name} /> : previewString}
-  </span>;
+  </span></span>;
 };
 
 // Get values from specificity ordered scopes.
@@ -278,6 +277,8 @@ export const VariableControl = (props) => {
     currentScope = ROOT_SCOPE,
     element,
     group,
+    groups,
+    changedScope,
   } = props;
 
   const {
@@ -300,8 +301,10 @@ export const VariableControl = (props) => {
     maxSpecific,
     positions,
     properties,
+    isRawValue,
   } = cssVar;
 
+  const isRawCalc = isRawValue && isSingleMathExpression(name);
   const uniqueSelectors = new Set(usages.map(u=>u.selector)).size;
 
   const inlineValue = group?.inlineStyles[name] || group?.inheritedInlineStyles[name];
@@ -345,9 +348,12 @@ export const VariableControl = (props) => {
     if (!referredVar) {
       return [];
     }
-    const usedScope = elementScopes?.find((scope) =>
-      scope.scopeVars.some((v) => v.name === varMatches[1])
+    const referencedName = varMatches[1];
+
+    const usedScope = elementScopes?.find(({selector}) =>
+      definedValues.hasOwnProperty(selector) && definedValues[selector].hasOwnProperty(referencedName)
     )?.selector;
+
     return [referredVar, usedScope];
   }, [value]);
 
@@ -369,7 +375,8 @@ export const VariableControl = (props) => {
     }
   }, [width]);
 
-  let currentLevel = referenceChain.length;
+  const currentLevel = referenceChain.length;
+  const isLink = currentLevel > 0;
   const key = referenceChainKey(referenceChain, cssVar);
 
   const excludedVarName = parentVar?.name;
@@ -384,7 +391,7 @@ export const VariableControl = (props) => {
     useResumableState(`open_${key}`, currentLevel > 0 && !!referencedVariable);
   const toggleOpen = () => setIsOpen(!isOpen );
   const [showSelectors, setShowSelectors] =
-    useResumableState(`showSelectors_${key}`, false);
+    useResumableState(`showSelectors_${key}`, cssVar.isRawValue && !isRawCalc);
   const [showReferences, setShowReferences] = 
     useResumableState(`showRefs_${key}`, false);
   const [openVariablePicker, setOpenVariablePicker] = 
@@ -392,12 +399,10 @@ export const VariableControl = (props) => {
 
   const references = useMemo(() => {
     // Prevent much unneeded work on large lists.
-    if (!isOpen) {
+    if (!isOpen || isRawValue) {
       return [];
     }
-    if (!name.startsWith('--')) {
-      return [];
-    }
+
     const hasRef = new RegExp(
       `var\\(\\s*${name.replaceAll(/-/g, "\\-")}[\\s\\,\\)]`
     );
@@ -430,7 +435,6 @@ export const VariableControl = (props) => {
   }, [editedScopes, isOpen]);
 
   const cssFunc = cssVar.cssFunc;
-  // const openerRef = useRef();
 
   if (currentLevel > 20) {
     // Very long dependency chain, probably cyclic, let's break it here.
@@ -438,11 +442,14 @@ export const VariableControl = (props) => {
     // Though this could also be an error in the source CSS.
     return null;
   }
-  // const stickyOffset = 72 + currentLevel * 36;
 
-  const isInTheme = name in (editedScopes[ROOT_SCOPE] || {}) || name in (editedScopes[currentScope] || {});
+  const isInTheme = name in (editedScopes[currentScope] || {});
 
   const otherReferencesLength = references.length - (excludedVarName ? 1 : 0);
+
+  function closeControl() {
+    setIsOpen(false);
+  }
 
   return (
     (<li
@@ -459,7 +466,8 @@ export const VariableControl = (props) => {
           return;
         }
         if (value) {
-          onChange(value)
+          const doHsl = cssFunc?.startsWith('hsl') && !value.startsWith('var(--');
+          onChange( doHsl ? toHslParams(value) : value)
         }
         // e.preventDefault();
         e.stopPropagation();
@@ -470,18 +478,18 @@ export const VariableControl = (props) => {
       className={classnames('var-control', {
         'var-control-in-theme': isInTheme,
         'var-control-no-match-screen': !matchesScreen,
+        'var-is-link': isLink,
       })}
       onClick={() => {
-        if (pickedValue && pickedValue !== value) {
+        if (!isRawValue && pickedValue && pickedValue !== value) {
           onChange(pickedValue);
           return;
         }
-        if (pickedValue === '' || pickedValue === value) {
+        if (isRawValue || pickedValue === '' || pickedValue === value) {
           if (!isOpen) toggleOpen();
         }
       }}
       style={{
-        // userSelect: 'none',
         position: 'relative',
         listStyleType: 'none',
         fontSize: '15px',
@@ -492,17 +500,9 @@ export const VariableControl = (props) => {
     >
       {!matchesScreen && <VariableScreenSwitcher {...{ cssVar, media, element }} />}
       <div
-        {...onLongPress((event) => {setPickedValue(value)})}
-        // ref={openerRef}
         style={{
-          // float: isOpen ? 'right' : 'none',
           paddingTop: 6,
-          // position: isOpen ? 'sticky' : 'static',
-          // zIndex: isOpen ? 11 : 0,
-          // top: stickyOffset,
-          // // top: 72 + currentLevel * 40,
-          // minHeight: 40,
-          // background: 'inherit',
+          minHeight: '2rem',
         }}
         onClick={() => {
           if (isOpen) {
@@ -511,8 +511,7 @@ export const VariableControl = (props) => {
         }}
       >
         <h5
-          draggable
-          onDragStart={dragValue(() => `var(${name})`)}
+          {...(isRawValue ? null : onLongPress(() => {setPickedValue( `var(${name})`)}))}
           style={{
             display: 'inline-block',
             fontSize: '16px',
@@ -532,10 +531,10 @@ export const VariableControl = (props) => {
           {usesInlineStyle && <span style={{color: 'red'}}>inline</span>}
         </h5>
         <PreviewValue
-          {...{ value, resolvedValue, cssVar, isDefault, referencedVariable, isOpen, group }}
+          {...{ value, resolvedValue, cssVar, isDefault, referencedVariable, isOpen, group, setPickedValue }}
         />
       </div>
-      <div>
+      <div style={{clear: 'both'}}>
         {media && <MediaQueries {...{ media }} />}
         {!!showCssProperties && (
           <Fragment>
@@ -601,7 +600,6 @@ export const VariableControl = (props) => {
           {otherReferencesLength > 0 && (
             <div>
               <ToggleButton
-                // style={{ float: 'right', fontSize: '14px', position: 'sticky', top: stickyOffset + 36, zIndex: showReferences ? 9 : 0 }}
                 controls={[showReferences, setShowReferences]}
               >
                 {otherReferencesLength}{currentLevel > 0 && ' more'} links
@@ -616,10 +614,6 @@ export const VariableControl = (props) => {
               display: 'flex',
               clear: 'both',
               justifyContent: 'flex-end',
-              // position: 'sticky',
-              // top: stickyOffset + 42,
-              // background: 'inherit',
-              // zIndex: 9,
             }}
           >
             {isDefault && !cssVar.isRawValue && (
@@ -637,6 +631,7 @@ export const VariableControl = (props) => {
                title={`Remove from current theme? The value from the default theme will be used, which is currently: "${defaultValue}"`}
                 onClick={() => {
                   onUnset();
+                  if (changedScope) closeControl();
                 }}
               >
                 Revert
@@ -653,8 +648,9 @@ export const VariableControl = (props) => {
                 Raw
               </button>
             )}
+            {groups && <Variate {...{elementScopes, currentScope, name, value, onChange: closeControl, group, groups}}/>}
 
-            {/^--/.test(cssVar.name) && <button
+            {!isRawValue && <button
               style={{borderWidth: openVariablePicker ? '4px' : '1px'}}
               onClick={(event) => {
               setOpenVariablePicker(!openVariablePicker);
@@ -663,11 +659,14 @@ export const VariableControl = (props) => {
               Link
             </button>}
 
-            {!usages[0].isFake && (
+            {!usages[0].isFake && (<div draggable onDragStart={e=> {
+              e.stopPropagation();
+              e.dataTransfer.setData('selector', uniqueSelectors.join(', '))
+            }}>
               <ToggleButton controls={[showSelectors, setShowSelectors]}>
                 Rules ({uniqueSelectors})
               </ToggleButton>
-            )}
+            </div>)}
           </div>
           {openVariablePicker && (
             <FilterableVariableList
@@ -692,31 +691,16 @@ export const VariableControl = (props) => {
             </Fragment>
           )}
           {(!referencedVariable || overwriteVariable) && !openVariablePicker && (
-            <div
-              // onMouseEnter={() => {
-              //   PSEUDO_REGEX.test(name) &&
-              //     dispatch({
-              //       type: ACTIONS.startPreviewPseudoState,
-              //       payload: { name },
-              //     });
-              // }}
-              // onMouseLeave={() => {
-              //   PSEUDO_REGEX.test(name) &&
-              //     dispatch({
-              //       type: ACTIONS.endPreviewPseudoState,
-              //       payload: { name },
-              //     });
-              // }}
-            >
+            <div>
               <TypedControl {...{ cssVar, value, resolvedValue, referencedVars, onChange, cssFunc, elementScopes }} />
             </div>
           )}
-          {!name.startsWith('--') && isSingleMathExpression(name) && (
+          {isRawCalc && (
             <CalcSizeControl disabled {...{value, resolvedValue, referencedVars, onChange: () => {}, elementScopes}} />
           )}
           {!!referencedVariable && !overwriteVariable && (
             <ul style={{ margin: 0 }}>
-              <span className='monospace-code'>{usedScope}</span>
+              {usedScope && <span className='monospace-code'>{usedScope}</span>}
               <VariableControl
                 {...{ scopes: elementScopes, currentScope: usedScope,  }}
                 cssVar={referencedVariable}

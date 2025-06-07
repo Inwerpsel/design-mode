@@ -28,7 +28,7 @@ export function VariableReferences(props) {
             return null;
           }
           return <li key={name} style={{marginTop: '1rem'}}>
-            <h5 style={{fontWeight: 'bold'}}>
+            <h5 style={{fontWeight: 'bold', fontSize: 24}}>
               <FormatVariableName {...{ name }} />
             </h5>
             <ul>{scopes.map(scope => {
