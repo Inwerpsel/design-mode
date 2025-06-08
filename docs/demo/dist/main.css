@@ -223,9 +223,14 @@ body {
   scroll-margin-bottom: 12px;
 }
 .dofullheight .theme-editor-highlight {
-  outline: none !important;
-  animation: none;
+  animation: none !important;
+  transition: none !important;
   background-color: yellow !important;
+}
+.dofullheight .theme-editor-highlight * {
+  background-color: inherit !important;
+  animation: none !important;
+  transition: none !important;
 }
 
 .shadow-picker {
@@ -395,7 +400,7 @@ div[id^=font-picker] ul {
   width: 400px;
   max-width: 400px;
 }
-@media screen and (min-height: 350px) {
+@media screen and (min-height: 800px) {
   #area-left, #area-left-inner, #area-right {
     max-height: calc(100vh - var(--top-area--height, 60px) - var(--bottom-area--height, 60px));
   }

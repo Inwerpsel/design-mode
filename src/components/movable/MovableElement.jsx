@@ -4,6 +4,7 @@ import {AreasContext, DRAG_LEAVE_TIMEOUT} from './MovablePanels';
 import {AreaSwitcher} from './AreaSwitcher';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import classnames from 'classnames';
+import { onLongPress } from '../../functions/onLongPress';
 
 export const MovableElementContext = createContext({});
 
@@ -114,6 +115,8 @@ export function MovableElement({homeAreaId, element, index}) {
       }}
       // title={!dragEnabled ? null : elementId}
       className={classnames('movable-element', { 'is-dragged': isDragged })}
+      {...onLongPress(showMovers ? () => setDraggedElement(elementId) : null)}
+      onClick={draggedElement ? () => setDraggedElement(null) : null}
       onDragStart={() => {
         if (dragEnabled || forceDrag) {
           setDraggedElement(elementId);
@@ -170,7 +173,7 @@ export function MovableElement({homeAreaId, element, index}) {
         {element}
       </MovableElementContext.Provider>
 
-      {showMovers && <AreaSwitcher {...{elementId, homeAreaId, hostAreaId}}/>}
+      {/* {showMovers && <AreaSwitcher {...{elementId, homeAreaId, hostAreaId}}/>} */}
 
       {draggedElement && draggedElement !== elementId && (
         <div
@@ -178,28 +181,10 @@ export function MovableElement({homeAreaId, element, index}) {
           className={classnames('dropzone', {
             'drag-hovered': isDragHovered ,
           })}
-          // onClick={e=>{
-          //   setDraggedElement(null);
-          //   setIsDragged(false);
-          //   movePanelTo(draggedElement, hostAreaId, elementId);
-
-          //   if (overElement) {
-          //     if (timeoutRef.current.element) {
-          //       clearTimeout(timeoutRef.current.element);
-          //       timeoutRef.current.element = null;
-          //     }
-          //     if (timeoutRef.current.area) {
-          //       clearTimeout(timeoutRef.current.area);
-          //       timeoutRef.current.area = null;
-          //     }
-          //     setOverElement(null);
-          //     return;
-          //   }
-          //   if (overArea) {
-          //     movePanelTo(elementId, overArea);
-          //   }
-     
-          // }}
+          onClick={()=>{
+            movePanelTo(draggedElement, hostAreaId, elementId);
+            setDraggedElement(null);
+          }}
           onDragEnter={() => {
             timeoutRef.current.lastEntered = elementId;
             if (timeoutRef.current.element) {

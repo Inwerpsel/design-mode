@@ -93,7 +93,7 @@ export function MoveControls() {
       {!isCompact && (
         <Fragment>
           <Checkbox controls={[showMovers, setShowMovers]}>
-            Move elements
+            Long press
           </Checkbox>
           {Object.keys(uiState.map).length > 0 && (
             <button onClick={() => doTransition(() => resetPanels())}>
