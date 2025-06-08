@@ -222,6 +222,11 @@ body {
   scroll-margin-right: 12px;
   scroll-margin-bottom: 12px;
 }
+.dofullheight .theme-editor-highlight {
+  outline: none !important;
+  animation: none;
+  background-color: yellow !important;
+}
 
 .shadow-picker {
   width: 100% !important;
@@ -891,6 +896,7 @@ button:disabled {
 }
 .dofullheight * {
   animation-play-state: paused !important;
+  transition-property: none !important;
 }
 
 .chrome-picker {
